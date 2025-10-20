@@ -11,6 +11,12 @@ public class ARObjectSpawnerAnchored : MonoBehaviour
     public Material yellowMat;
     public Material orbiterMat;
     public float distance = 1.5f; // Distance from player
+    
+    [Header("Color-Specific Orb Effect Prefabs")]
+    public GameObject redOrbEffect;
+    public GameObject blueOrbEffect;
+    public GameObject greenOrbEffect;
+    public GameObject yellowOrbEffect;
 
     private Transform arCamera;
     private ARAnchorManager anchorManager;
@@ -118,12 +124,12 @@ public class ARObjectSpawnerAnchored : MonoBehaviour
         // Define sphere positions relative to camera's horizontal forward direction
         Vector3[] relativePositions = {
             cameraPos + cameraForward * distance,     // Front (Red)
-            cameraPos + (-cameraForward) * distance,   // Back (Yellow) 
+            cameraPos + (-cameraForward) * distance,   // Back (Green) 
             cameraPos + (-cameraRight) * distance,     // Left (Blue)
-            cameraPos + cameraRight * distance         // Right (Green)
+            cameraPos + cameraRight * distance         // Right (Yellow)
         };
         
-        Material[] materials = { redMat, yellowMat, blueMat, greenMat };
+        Material[] materials = { redMat, greenMat, blueMat, yellowMat };
 
         for (int i = 0; i < 4; i++)
         {
@@ -176,6 +182,10 @@ public class ARObjectSpawnerAnchored : MonoBehaviour
         // Set the color based on material
         Color sphereColor = GetColorFromMaterial(colorMat);
         colorSphere.SetColor(sphereColor);
+        
+        // Add orb effect to the sphere based on color
+        GameObject colorOrbPrefab = GetOrbPrefabForColor(colorMat);
+        AddOrbEffectToSphere(obj, colorOrbPrefab);
         
         return anchorGO;
     }
@@ -264,5 +274,32 @@ public class ARObjectSpawnerAnchored : MonoBehaviour
         if (n.Contains("Green")) return Color.green;
         if (n.Contains("Yellow")) return Color.yellow;
         return Color.white;
+    }
+    
+    private GameObject GetOrbPrefabForColor(Material mat)
+    {
+        if (mat == null) return null;
+        string n = mat.name;
+        if (n.Contains("Red")) return redOrbEffect;
+        if (n.Contains("Blue")) return blueOrbEffect;
+        if (n.Contains("Green")) return greenOrbEffect;
+        if (n.Contains("Yellow")) return yellowOrbEffect;
+        return null;
+    }
+    
+    private void AddOrbEffectToSphere(GameObject sphere, GameObject orbPrefab)
+    {
+        // Add OrbEffectManager component to the sphere
+        OrbEffectManager orbEffectManager = sphere.GetComponent<OrbEffectManager>();
+        if (orbEffectManager == null)
+        {
+            orbEffectManager = sphere.AddComponent<OrbEffectManager>();
+        }
+        
+        // Attach the specific orb effect prefab
+        if (orbPrefab != null)
+        {
+            orbEffectManager.AttachSpecificOrbEffect(sphere.transform, orbPrefab);
+        }
     }
 }

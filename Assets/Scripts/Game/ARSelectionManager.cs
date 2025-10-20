@@ -5,7 +5,7 @@ using TMPro;
 public class ARSelectionManager : MonoBehaviour
 {
     [Header("Selection Settings")]
-    public float selectionDistance = 5f;
+    public float selectionDistance = 10f;
     public float selectionAngle = 30f; // Degrees from center
     public Color selectionHighlightColor = Color.black; // For player targeting
     
