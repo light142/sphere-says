@@ -74,82 +74,85 @@ public class Game2DUI : MonoBehaviour
     
     void Setup2DUI()
     {
-        // Setup 2D Game Canvas for mobile
+        // Setup 2D Game Canvas for responsive design
         Canvas gameCanvas = GetComponent<Canvas>();
         if (gameCanvas != null)
         {
             gameCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
             gameCanvas.sortingOrder = 2;
             
-            // Setup Canvas Scaler for mobile
+            // Setup Canvas Scaler for responsive design
             CanvasScaler scaler = gameCanvas.GetComponent<CanvasScaler>();
             if (scaler == null)
             {
                 scaler = gameCanvas.gameObject.AddComponent<CanvasScaler>();
             }
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1080, 1920); // Portrait mobile resolution
+            scaler.referenceResolution = new Vector2(1920, 1080); // Use a balanced reference resolution
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             scaler.matchWidthOrHeight = 0.5f; // Balance between width and height
         }
         
-        // Position UI elements for mobile
+        // Position UI elements using anchors for better responsiveness
         TextMeshProUGUI[] texts = GetComponentsInChildren<TextMeshProUGUI>();
         Button[] buttons = GetComponentsInChildren<Button>();
         
-        // Position level text at top (mobile-friendly)
+        // Position level text at top using proper anchors
         if (texts.Length > 0)
         {
             RectTransform levelRect = texts[0].GetComponent<RectTransform>();
-            levelRect.anchorMin = new Vector2(0.5f, 1f);
-            levelRect.anchorMax = new Vector2(0.5f, 1f);
-            levelRect.sizeDelta = new Vector2(400, 100); // Larger container for larger text
-            levelRect.anchoredPosition = new Vector2(0, -200); // Move down to avoid camera notch
+            levelRect.anchorMin = new Vector2(0.1f, 0.85f);
+            levelRect.anchorMax = new Vector2(0.9f, 0.95f);
+            levelRect.offsetMin = Vector2.zero;
+            levelRect.offsetMax = Vector2.zero;
             
-            // Make text much larger for mobile
             TextMeshProUGUI levelText = texts[0].GetComponent<TextMeshProUGUI>();
             if (levelText != null)
             {
-                levelText.fontSize = 48; // Much larger level text
+                levelText.fontSize = 48;
                 levelText.alignment = TextAlignmentOptions.Center;
             }
         }
         
-        // Position instruction text below level (mobile-friendly)
+        // Position instruction text below level using proper anchors
         if (texts.Length > 1)
         {
             RectTransform instructionRect = texts[1].GetComponent<RectTransform>();
-            instructionRect.anchorMin = new Vector2(0.5f, 1f);
-            instructionRect.anchorMax = new Vector2(0.5f, 1f);
-            instructionRect.sizeDelta = new Vector2(500, 80); // Larger container for larger text
-            instructionRect.anchoredPosition = new Vector2(0, -300); // Move down to avoid camera notch
+            instructionRect.anchorMin = new Vector2(0.1f, 0.75f);
+            instructionRect.anchorMax = new Vector2(0.9f, 0.85f);
+            instructionRect.offsetMin = Vector2.zero;
+            instructionRect.offsetMax = Vector2.zero;
             
-            // Make text much larger for mobile
             TextMeshProUGUI instructionText = texts[1].GetComponent<TextMeshProUGUI>();
             if (instructionText != null)
             {
-                instructionText.fontSize = 36; // Much larger instruction text
+                instructionText.fontSize = 36;
                 instructionText.alignment = TextAlignmentOptions.Center;
             }
         }
         
-        // Position color buttons in a 2x2 grid (mobile-optimized)
+        // Position color buttons in a proper 2x2 grid using anchors
         Button[] colorButtons = { redButton, blueButton, greenButton, yellowButton };
         for (int i = 0; i < colorButtons.Length; i++)
         {
             if (colorButtons[i] != null)
             {
                 RectTransform rect = colorButtons[i].GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0.5f, 0.5f);
-                rect.anchorMax = new Vector2(0.5f, 0.5f);
-                rect.sizeDelta = new Vector2(350, 350); // Much larger color buttons to fill screen
                 
-                // 2x2 grid positioning with better spacing for much larger buttons
+                // Calculate grid position
                 int row = i / 2;
                 int col = i % 2;
-                float x = (col - 0.5f) * 400; // Much more spacing for larger buttons
-                float y = (row - 0.5f) * 400; // Much more spacing for larger buttons
-                rect.anchoredPosition = new Vector2(x, y - 30); // Centered better for larger buttons
+                
+                // Use proper anchor-based positioning for 2x2 grid
+                float leftAnchor = 0.1f + col * 0.4f;   // 0.1, 0.5
+                float rightAnchor = 0.1f + (col + 1) * 0.4f; // 0.5, 0.9
+                float bottomAnchor = 0.25f + row * 0.25f;     // 0.25, 0.5
+                float topAnchor = 0.25f + (row + 1) * 0.25f;  // 0.5, 0.75
+                
+                rect.anchorMin = new Vector2(leftAnchor, bottomAnchor);
+                rect.anchorMax = new Vector2(rightAnchor, topAnchor);
+                rect.offsetMin = new Vector2(10, 10); // Small padding
+                rect.offsetMax = new Vector2(-10, -10); // Small padding
                 
                 // Add rounded corners to color buttons
                 Image buttonImage = colorButtons[i].GetComponent<Image>();
@@ -158,27 +161,32 @@ public class Game2DUI : MonoBehaviour
                     AddRoundedCorners(buttonImage);
                 }
                 
-                // Make button text larger
+                // Make button text responsive
                 TextMeshProUGUI buttonText = colorButtons[i].GetComponentInChildren<TextMeshProUGUI>();
                 if (buttonText != null)
                 {
-                    buttonText.fontSize = 56; // Much larger text for much larger buttons
+                    buttonText.fontSize = 48;
                     buttonText.alignment = TextAlignmentOptions.Center;
                 }
             }
         }
         
-        // Position control buttons at bottom (mobile-friendly)
+        // Position control buttons at bottom using proper anchors
         Button[] controlButtons = { restartButton, menuButton };
         for (int i = 0; i < controlButtons.Length; i++)
         {
             if (controlButtons[i] != null)
             {
                 RectTransform rect = controlButtons[i].GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0.5f, 0f);
-                rect.anchorMax = new Vector2(0.5f, 0f);
-                rect.sizeDelta = new Vector2(300, 100); // Much larger control buttons for mobile
-                rect.anchoredPosition = new Vector2(-150 + (i * 300), 120); // Better spacing for much larger buttons
+                
+                // Position buttons side by side at bottom
+                float leftAnchor = 0.1f + i * 0.4f;   // 0.1, 0.5
+                float rightAnchor = 0.1f + (i + 1) * 0.4f; // 0.5, 0.9
+                
+                rect.anchorMin = new Vector2(leftAnchor, 0.05f);
+                rect.anchorMax = new Vector2(rightAnchor, 0.15f);
+                rect.offsetMin = new Vector2(10, 10); // Small padding
+                rect.offsetMax = new Vector2(-10, -10); // Small padding
                 
                 // Add rounded corners to control buttons
                 Image buttonImage = controlButtons[i].GetComponent<Image>();
@@ -187,11 +195,11 @@ public class Game2DUI : MonoBehaviour
                     AddRoundedCorners(buttonImage);
                 }
                 
-                // Make button text larger
+                // Make button text responsive
                 TextMeshProUGUI buttonText = controlButtons[i].GetComponentInChildren<TextMeshProUGUI>();
                 if (buttonText != null)
                 {
-                    buttonText.fontSize = 36; // Much larger text for much larger control buttons
+                    buttonText.fontSize = 32;
                     buttonText.alignment = TextAlignmentOptions.Center;
                 }
             }

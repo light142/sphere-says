@@ -3006,6 +3006,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sequenceDelay: 1
   inputTimeout: 3
+  colorDelay: 2
+  levelTransitionDelay: 0.5
+  orbiterGrowDelay: 0.5
+  orbiterShrinkDelay: 0.5
   redColor: {r: 1, g: 0, b: 0, a: 1}
   blueColor: {r: 0, g: 0, b: 1, a: 1}
   greenColor: {r: 0, g: 1, b: 0, a: 1}
@@ -3722,13 +3726,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spherePrefab: {fileID: 976690604711159737, guid: ccc3486d2689f654ab996fbd6b74e417, type: 3}
-  orbiterPrefab: {fileID: 976690604711159737, guid: 2659dc32d9be9a148a7f90396e83e2f0, type: 3}
+  orbiterPrefab: {fileID: 1713781036754730, guid: 85b6106fa9c652549bcaaf578e586d6a, type: 3}
   redMat: {fileID: 2100000, guid: 62908c51ca9b151419edc5687ecc5a8a, type: 2}
   blueMat: {fileID: 2100000, guid: a99b3f44a18504349bd6e17c59b07b86, type: 2}
   greenMat: {fileID: 2100000, guid: b12b50a4873dcfd4899b92180962614b, type: 2}
   yellowMat: {fileID: 2100000, guid: ca8dd3f8f98319d46a2d787d7c4cba21, type: 2}
-  orbiterMat: {fileID: 2100000, guid: f25c8032193d901489d010b16f3e11c7, type: 2}
-  distance: 3
+  orbiterMat: {fileID: 0}
+  distance: 4
+  redOrbEffect: {fileID: 4262623056482241364, guid: cb4d38b11a0097c4280da4e0c54dfde2, type: 3}
+  blueOrbEffect: {fileID: 8240083682830294036, guid: 26d236b77289e974189999fe92f18288, type: 3}
+  greenOrbEffect: {fileID: 4262623056482241364, guid: a411a00805fef0e40a278ae6cb8a9ee4, type: 3}
+  yellowOrbEffect: {fileID: 3424929205512600573, guid: f5f9cf21f13f12349bc54726be257afe, type: 3}
 --- !u!1 &1200617192
 GameObject:
   m_ObjectHideFlags: 0

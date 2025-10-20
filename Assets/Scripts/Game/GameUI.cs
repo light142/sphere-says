@@ -92,10 +92,6 @@ public class GameUI : MonoBehaviour
         
         // Add RectTransform
         RectTransform selectRect = selectButtonObj.AddComponent<RectTransform>();
-        selectRect.anchorMin = new Vector2(0.5f, 0f);
-        selectRect.anchorMax = new Vector2(0.5f, 0f);
-        selectRect.sizeDelta = new Vector2(300, 100); // Match other button sizes
-        selectRect.anchoredPosition = new Vector2(0, 250); // Position above other buttons
         
         // Add Button component
         selectButton = selectButtonObj.AddComponent<Button>();
@@ -137,8 +133,8 @@ public class GameUI : MonoBehaviour
             RectTransform selectRect = selectButton.GetComponent<RectTransform>();
             selectRect.anchorMin = new Vector2(0.5f, 0f);
             selectRect.anchorMax = new Vector2(0.5f, 0f);
-            selectRect.sizeDelta = new Vector2(300, 100); // Match other button sizes
-            selectRect.anchoredPosition = new Vector2(0, 250); // Position above other buttons
+            selectRect.sizeDelta = new Vector2(350, 150); // Match other button sizes
+            selectRect.anchoredPosition = new Vector2(0, 350); // Position above other buttons
             
             // Style the select button
             Image selectImage = selectButton.GetComponent<Image>();
