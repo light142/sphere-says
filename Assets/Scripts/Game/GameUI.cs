@@ -24,7 +24,7 @@ public class GameUI : MonoBehaviour
     private OrbiterController orbiterController;
     
     void Start()
-    {
+    {        
         // Make GameUIPanel background transparent to remove whitish overlay
         SetupTransparentBackground();
         
@@ -156,18 +156,18 @@ public class GameUI : MonoBehaviour
     
     void SetupTransparentBackground()
     {
-        // Find and make GameUIPanel background transparent
+        // Find and make GameUIPanel background transparent (but not our custom background)
         Image panelImage = GetComponent<Image>();
         if (panelImage != null)
         {
             panelImage.color = new Color(1f, 1f, 1f, 0f); // Fully transparent
         }
         
-        // Also check for any child panels
+        // Also check for any child panels (but exclude our UIBackgroundManager backgrounds)
         Image[] childImages = GetComponentsInChildren<Image>();
         foreach (Image img in childImages)
         {
-            if (img.name.Contains("Panel") || img.name.Contains("Background"))
+            if (img.name.Contains("Panel") && !img.name.Contains("Background") && !img.name.Contains("Gradient") && !img.name.Contains("Pattern") && !img.name.Contains("Particle"))
             {
                 img.color = new Color(1f, 1f, 1f, 0f); // Fully transparent
             }

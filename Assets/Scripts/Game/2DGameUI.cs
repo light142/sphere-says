@@ -20,6 +20,22 @@ public class Game2DUI : MonoBehaviour
     
     void Start()
     {
+        // Add background manager for nice visual effects
+        UIBackgroundManager bgManager = GetComponent<UIBackgroundManager>();
+        if (bgManager == null)
+        {
+            bgManager = gameObject.AddComponent<UIBackgroundManager>();
+        }
+        
+        // Blue theme for 2D game
+        bgManager.topColor = new Color(0.1f, 0.3f, 0.6f, 0.5f); // Ocean blue
+        bgManager.bottomColor = new Color(0.05f, 0.1f, 0.3f, 0.5f); // Deep blue
+        bgManager.patternColor = new Color(0.6f, 0.8f, 1f, 0.15f); // Light blue pattern
+        bgManager.particleColor = new Color(0.7f, 0.9f, 1f, 1f); // Blue particles - fully opaque
+        
+        // Update colors if background already exists
+        bgManager.UpdateBackgroundColors();
+        
         Setup2DUI();
         SetupColorButtons();
         simonGame = FindFirstObjectByType<SimonSaysGame>();

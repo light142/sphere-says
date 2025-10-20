@@ -13,6 +13,22 @@ public class GameOverUI : MonoBehaviour
     
     void Start()
     {
+        // Add background manager for nice visual effects
+        UIBackgroundManager bgManager = GetComponent<UIBackgroundManager>();
+        if (bgManager == null)
+        {
+            bgManager = gameObject.AddComponent<UIBackgroundManager>();
+        }
+        
+        // Red theme for game over
+        bgManager.topColor = new Color(0.4f, 0.1f, 0.1f, 0.2f); // Deep red
+        bgManager.bottomColor = new Color(0.2f, 0.05f, 0.05f, 0.2f); // Dark red
+        bgManager.patternColor = new Color(1f, 0.7f, 0.7f, 0.15f); // Light red pattern
+        bgManager.particleColor = new Color(1f, 0.8f, 0.8f, 1f); // Red particles - fully opaque
+        
+        // Update colors if background already exists
+        bgManager.UpdateBackgroundColors();
+        
         SetupGameOverUI();
         EnsureLevelTextExists();
         

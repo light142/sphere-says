@@ -285,7 +285,16 @@ public class GameManager : MonoBehaviour
     public void ShowMainMenu()
     {
         currentGameMode = GameMode.None;
-        if (mainMenuUI != null) mainMenuUI.SetActive(true);
+        if (mainMenuUI != null) 
+        {
+            mainMenuUI.SetActive(true);
+            // Restart background animation when showing main menu
+            UIBackgroundManager bgManager = mainMenuUI.GetComponent<UIBackgroundManager>();
+            if (bgManager != null)
+            {
+                bgManager.RestartAnimation();
+            }
+        }
         if (gameUI != null) gameUI.SetActive(false);
         if (game2DUI != null) game2DUI.SetActive(false);
         if (gameOverUI != null) gameOverUI.SetActive(false);
@@ -372,13 +381,27 @@ public class GameManager : MonoBehaviour
             if (game2DUI != null) 
             {
                 game2DUI.SetActive(true);
+                // Restart background animation when showing 2D game
+                UIBackgroundManager bgManager = game2DUI.GetComponent<UIBackgroundManager>();
+                if (bgManager != null)
+                {
+                    bgManager.RestartAnimation();
+                }
             }
             if (gameUI != null) gameUI.SetActive(false);
         }
         else if (currentGameMode == GameMode.ModeAR)
         {
             if (gameUI != null) 
+            {
                 gameUI.SetActive(true);
+                // Restart background animation when showing AR game
+                UIBackgroundManager bgManager = gameUI.GetComponent<UIBackgroundManager>();
+                if (bgManager != null)
+                {
+                    bgManager.RestartAnimation();
+                }
+            }
 
             if (game2DUI != null)
                 game2DUI.SetActive(false);
@@ -423,6 +446,12 @@ public class GameManager : MonoBehaviour
         if (gameOverUI != null) 
         {
             gameOverUI.SetActive(true);
+            // Restart background animation when showing game over
+            UIBackgroundManager bgManager = gameOverUI.GetComponent<UIBackgroundManager>();
+            if (bgManager != null)
+            {
+                bgManager.RestartAnimation();
+            }
         }
     }
     
