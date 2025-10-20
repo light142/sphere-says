@@ -7,6 +7,10 @@ public class SimonSaysGame : MonoBehaviour
     [Header("Game Settings")]
     public float sequenceDelay = 1f;
     public float inputTimeout = 3f;
+    public float colorDelay = 0.1f; // Delay between each color in AR sequence
+    public float levelTransitionDelay = 0.5f; // Delay between levels
+    public float orbiterGrowDelay = 0.5f; // Delay for orbiter grow animation
+    public float orbiterShrinkDelay = 0.5f; // Delay for orbiter shrink animation
     
     [Header("Colors")]
     public Color redColor = Color.red;
@@ -49,7 +53,7 @@ public class SimonSaysGame : MonoBehaviour
 
     private IEnumerator DelayStart()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(levelTransitionDelay);
         isIdle = false; // Game is starting, no longer idle
         StartCoroutine(PlaySequence());
     }
@@ -115,7 +119,7 @@ public class SimonSaysGame : MonoBehaviour
         OnOrbiterGrow?.Invoke();
         
         // Wait for orbiter to grow before starting sequence
-        yield return new WaitForSeconds(0.5f); // Wait for grow animation
+        yield return new WaitForSeconds(orbiterGrowDelay); // Wait for grow animation
         
         // Create a copy of the sequence to avoid modification during iteration
         List<Color> sequenceCopy = new List<Color>(sequence);
@@ -134,8 +138,8 @@ public class SimonSaysGame : MonoBehaviour
                 // NOW highlight the color after orbiter has reached the target
                 OnColorHighlight?.Invoke(color);
                 
-                // Brief pause after highlighting
-                yield return new WaitForSeconds(0.5f);
+                // Brief pause after highlighting (configurable delay)
+                yield return new WaitForSeconds(1f);
                 
                 // Reset orbiter for next color
                 ResetOrbiterForNextColor();
@@ -152,7 +156,7 @@ public class SimonSaysGame : MonoBehaviour
         OnOrbiterShrink?.Invoke();
         
         // Wait for orbiter to shrink before ending sequence
-        yield return new WaitForSeconds(0.5f); // Wait for shrink animation
+        yield return new WaitForSeconds(orbiterShrinkDelay); // Wait for shrink animation
         
         isPlayingSequence = false;
         isWaitingForInput = true;
@@ -163,7 +167,7 @@ public class SimonSaysGame : MonoBehaviour
     
     private IEnumerator NextLevel()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(levelTransitionDelay);
         
         int currentLevel = GameManager.Instance.currentLevel;
         currentLevel++;

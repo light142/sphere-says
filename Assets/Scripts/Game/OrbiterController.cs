@@ -29,7 +29,7 @@ public class OrbiterController : MonoBehaviour
     private Vector3 orbitCenter;
     private float orbitAngle = 0f;
     private Renderer orbiterRenderer;
-    private AROrbitSphere orbitSphereComponent;
+    private IAROrbitSphere orbitSphereComponent;
     private bool isPulsing = false;
     private Color baseReachedColor;
     private Vector3 originalScale; // Store the original scale when spawned
@@ -46,7 +46,7 @@ public class OrbiterController : MonoBehaviour
     void Start()
     {
         orbiterRenderer = GetComponent<Renderer>();
-        orbitSphereComponent = GetComponent<AROrbitSphere>();
+        orbitSphereComponent = GetComponent<IAROrbitSphere>();
         
         // Store the original scale when spawned
         originalScale = transform.localScale;

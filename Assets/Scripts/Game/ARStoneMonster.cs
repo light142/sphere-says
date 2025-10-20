@@ -1,37 +1,29 @@
 using UnityEngine;
 
-public interface IAROrbitSphere
-{
-    void HighlightOrbiter();
-    void HighlightOrbiter(bool autoUnhighlight);
-    void SetColor(Color color);
-    void UnhighlightOrbiter();
-}
-
-public class AROrbitSphere : MonoBehaviour, IAROrbitSphere
+public class ARStoneMonster : MonoBehaviour, IAROrbitSphere
 {
     [Header("Sphere Settings")]
     public Color sphereColor;
     public Color highlightColor = Color.white;
     public float highlightDuration = 0.3f;
-
+    
     [Header("References")]
     public Renderer sphereRenderer;
     public Collider sphereCollider;
-
+    
     private Color originalColor;
     private bool isHighlighted = false;
-
+    
     void Start()
     {
-        if (sphereRenderer == null)
-            sphereRenderer = GetComponent<Renderer>();
-        if (sphereRenderer == null)
-            sphereRenderer = GetComponentInChildren<Renderer>(true);
-
+         if (sphereRenderer == null)
+             sphereRenderer = GetComponent<Renderer>();
+         if (sphereRenderer == null)
+             sphereRenderer = GetComponentInChildren<Renderer>(true);
+        
         if (sphereCollider == null)
             sphereCollider = GetComponent<Collider>();
-
+        
         if (sphereRenderer != null)
         {
             // Check if material has _Color property before accessing it
@@ -46,29 +38,29 @@ public class AROrbitSphere : MonoBehaviour, IAROrbitSphere
                 originalColor = Color.white;
             }
         }
-
+        
         // Add basic collider interaction
         if (sphereCollider != null)
         {
             sphereCollider.isTrigger = true;
         }
     }
-
+    
     public void HighlightOrbiter()
     {
         HighlightOrbiter(true); // Default to auto-unhighlight
     }
-
+    
     public void HighlightOrbiter(bool autoUnhighlight)
     {
         if (isHighlighted) return;
-
+        
         isHighlighted = true;
         if (sphereRenderer != null && sphereRenderer.material.HasProperty("_Color"))
         {
             sphereRenderer.material.color = highlightColor;
         }
-
+        
         if (autoUnhighlight)
         {
             // Auto-unhighlight after duration (for Simon sequence)
@@ -76,7 +68,7 @@ public class AROrbitSphere : MonoBehaviour, IAROrbitSphere
         }
         // If autoUnhighlight is false, highlight stays (for player selection)
     }
-
+    
     public void UnhighlightOrbiter()
     {
         isHighlighted = false;
@@ -85,7 +77,7 @@ public class AROrbitSphere : MonoBehaviour, IAROrbitSphere
             sphereRenderer.material.color = sphereColor;
         }
     }
-
+    
     public void SetColor(Color color)
     {
         sphereColor = color;

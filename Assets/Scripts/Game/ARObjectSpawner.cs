@@ -48,6 +48,7 @@ public class ARObjectSpawnerAnchored : MonoBehaviour
     
     public void TriggerSpawn()
     {
+        Debug.Log("TriggerSpawn called");
         // Clear existing objects first
         ClearExistingObjects();
         
@@ -192,20 +193,35 @@ public class ARObjectSpawnerAnchored : MonoBehaviour
         if (anchor is null)
             return null;
 
-        // Instantiate sphere as child of anchor
+        // Instantiate orbiter as child of anchor
         GameObject obj = Instantiate(orbiterPrefab, anchor.transform);
-        obj.GetComponent<Renderer>().material = colorMat;
+        Debug.Log($"Spawned orbiter: {obj.name}, Components: {obj.GetComponents<MonoBehaviour>().Length}");
+        var rootRenderer = obj.GetComponent<Renderer>();
+        if (rootRenderer == null)
+        {
+            rootRenderer = obj.GetComponentInChildren<Renderer>(true);
+        }
+        if (rootRenderer != null && colorMat != null)
+        {
+            rootRenderer.material = colorMat;
+        }
         
         // Debug the positions to see if prefab has local offset
         
         // Zero the local position to ensure orbiter spawns exactly at anchor position
         obj.transform.localPosition = Vector3.zero;
         
-        // Add AR interaction component for Simon Says game
-        AROrbitSphere colorSphere = obj.GetComponent<AROrbitSphere>();
-        if (colorSphere == null)
+        // Add/get visual component via interface so we can swap implementations
+        IAROrbitSphere orbitVisual = obj.GetComponent<IAROrbitSphere>();
+        if (orbitVisual == null)
         {
-            colorSphere = obj.AddComponent<AROrbitSphere>();
+            // Fallback to default AROrbitSphere if none present
+            AROrbitSphere fallback = obj.GetComponent<AROrbitSphere>();
+            if (fallback == null)
+            {
+                fallback = obj.AddComponent<AROrbitSphere>();
+            }
+            orbitVisual = fallback;
         }
         
         // Add orbiter controller for movement
@@ -232,19 +248,21 @@ public class ARObjectSpawnerAnchored : MonoBehaviour
         // Initialize the orbiter at a proper orbit position
         orbiterController.InitializeAfterSpawn();
         
-        // Set the color based on material
+        // Set the color based on material (no-op for implementations that ignore color)
         Color sphereColor = GetColorFromMaterial(colorMat);
-        colorSphere.SetColor(sphereColor);
+        orbitVisual.SetColor(sphereColor);
         
         return anchorGO;
     }
     
     private Color GetColorFromMaterial(Material mat)
     {
-        if (mat.name.Contains("Red")) return Color.red;
-        if (mat.name.Contains("Blue")) return Color.blue;
-        if (mat.name.Contains("Green")) return Color.green;
-        if (mat.name.Contains("Yellow")) return Color.yellow;
+        if (mat == null) return Color.white;
+        string n = mat.name;
+        if (n.Contains("Red")) return Color.red;
+        if (n.Contains("Blue")) return Color.blue;
+        if (n.Contains("Green")) return Color.green;
+        if (n.Contains("Yellow")) return Color.yellow;
         return Color.white;
     }
 }
