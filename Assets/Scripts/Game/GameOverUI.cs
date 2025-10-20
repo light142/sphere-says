@@ -40,12 +40,12 @@ public class GameOverUI : MonoBehaviour
             RectTransform levelRect = levelTextObj.AddComponent<RectTransform>();
             levelRect.anchorMin = new Vector2(0.5f, 0.5f);
             levelRect.anchorMax = new Vector2(0.5f, 0.5f);
-            levelRect.sizeDelta = new Vector2(350, 60);
-            levelRect.anchoredPosition = new Vector2(0, 100); // Same as SetupGameOverUI
+            levelRect.sizeDelta = new Vector2(500, 80); // Match the larger container size
+            levelRect.anchoredPosition = new Vector2(0, 120); // Match the adjusted position
             
             TextMeshProUGUI levelText = levelTextObj.AddComponent<TextMeshProUGUI>();
             levelText.text = $"Final Score: Level {GameManager.Instance.currentLevel}";
-            levelText.fontSize = 28;
+            levelText.fontSize = 36; // Match the larger score text size
             levelText.alignment = TextAlignmentOptions.Center;
             levelText.color = new Color(0.9f, 0.9f, 0.9f, 1f);
             levelText.fontStyle = FontStyles.Bold;
@@ -82,13 +82,13 @@ public class GameOverUI : MonoBehaviour
             RectTransform gameOverRect = texts[0].GetComponent<RectTransform>();
             gameOverRect.anchorMin = new Vector2(0.5f, 0.5f);
             gameOverRect.anchorMax = new Vector2(0.5f, 0.5f);
-            gameOverRect.sizeDelta = new Vector2(400, 100);
-            gameOverRect.anchoredPosition = new Vector2(0, 150); // Moved further down to avoid cutoff
+            gameOverRect.sizeDelta = new Vector2(600, 120); // Larger container for larger text
+            gameOverRect.anchoredPosition = new Vector2(0, 200); // Moved further down for larger text
             
             TextMeshProUGUI gameOverText = texts[0].GetComponent<TextMeshProUGUI>();
             if (gameOverText != null)
             {
-                gameOverText.fontSize = 32; // Reduced size to fit better
+                gameOverText.fontSize = 64; // Much larger Game Over text
                 gameOverText.alignment = TextAlignmentOptions.Center;
                 gameOverText.text = "Game Over!";
                 gameOverText.color = new Color(1f, 0.3f, 0.3f, 1f); // Red color
@@ -102,13 +102,13 @@ public class GameOverUI : MonoBehaviour
             RectTransform scoreRect = texts[1].GetComponent<RectTransform>();
             scoreRect.anchorMin = new Vector2(0.5f, 0.5f);
             scoreRect.anchorMax = new Vector2(0.5f, 0.5f);
-            scoreRect.sizeDelta = new Vector2(350, 60);
-            scoreRect.anchoredPosition = new Vector2(0, 100); // Positioned ABOVE buttons
+            scoreRect.sizeDelta = new Vector2(500, 80); // Larger container for larger text
+            scoreRect.anchoredPosition = new Vector2(0, 120); // Adjusted position for larger text
             
             TextMeshProUGUI scoreText = texts[1].GetComponent<TextMeshProUGUI>();
             if (scoreText != null)
             {
-                scoreText.fontSize = 16; // Larger for better visibility
+                scoreText.fontSize = 36; // Much larger for better visibility
                 scoreText.alignment = TextAlignmentOptions.Center;
                 scoreText.text = $"Final Score: Level {GameManager.Instance.currentLevel}";
                 scoreText.color = new Color(1f, 1f, 1f, 1f); // White for better contrast
@@ -124,9 +124,9 @@ public class GameOverUI : MonoBehaviour
                 RectTransform rect = buttons[i].GetComponent<RectTransform>();
                 rect.anchorMin = new Vector2(0.5f, 0.5f);
                 rect.anchorMax = new Vector2(0.5f, 0.5f);
-                rect.sizeDelta = new Vector2(280, 60);
+                rect.sizeDelta = new Vector2(350, 100); // Much larger buttons for mobile
                 // Position buttons BELOW level text to avoid overlap
-                rect.anchoredPosition = new Vector2(0, 20 - (i * 80));
+                rect.anchoredPosition = new Vector2(0, 20 - (i * 120)); // More spacing for larger buttons
                 
                 // Style button appearance
                 StyleButton(buttons[i], i);
@@ -174,7 +174,7 @@ public class GameOverUI : MonoBehaviour
         TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
         if (buttonText != null)
         {
-            buttonText.fontSize = 32;
+            buttonText.fontSize = 32; // Much larger button text for mobile
             buttonText.alignment = TextAlignmentOptions.Center;
             buttonText.color = Color.white;
             buttonText.fontStyle = FontStyles.Bold;

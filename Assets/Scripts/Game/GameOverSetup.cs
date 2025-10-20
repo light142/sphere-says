@@ -81,7 +81,7 @@ public class GameOverSetup : MonoBehaviour
             // Add TextMeshPro
             TextMeshProUGUI text = gameOverText.AddComponent<TextMeshProUGUI>();
             text.text = "Game Over!";
-            text.fontSize = 48;
+            text.fontSize = 64; // Match the larger Game Over text
             text.alignment = TextAlignmentOptions.Center;
             text.color = Color.white;
         }
@@ -103,7 +103,7 @@ public class GameOverSetup : MonoBehaviour
             // Add TextMeshPro
             TextMeshProUGUI scoreText = finalScoreText.AddComponent<TextMeshProUGUI>();
             scoreText.text = "Final Score: Level 1";
-            scoreText.fontSize = 32;
+            scoreText.fontSize = 36; // Match the larger score text
             scoreText.alignment = TextAlignmentOptions.Center;
             scoreText.color = Color.white;
         }
@@ -158,7 +158,7 @@ public class GameOverSetup : MonoBehaviour
         RectTransform rect = button.AddComponent<RectTransform>();
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = new Vector2(250, 60);
+        rect.sizeDelta = new Vector2(350, 100); // Match the larger button size
         rect.anchoredPosition = position;
         
         // Add Image
@@ -180,7 +180,7 @@ public class GameOverSetup : MonoBehaviour
         
         TextMeshProUGUI textComponent = textObj.AddComponent<TextMeshProUGUI>();
         textComponent.text = text;
-        textComponent.fontSize = 28;
+        textComponent.fontSize = 48; // Match the larger button text
         textComponent.alignment = TextAlignmentOptions.Center;
         textComponent.color = Color.black;
         

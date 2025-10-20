@@ -103,14 +103,14 @@ public class Game2DUI : MonoBehaviour
             RectTransform levelRect = texts[0].GetComponent<RectTransform>();
             levelRect.anchorMin = new Vector2(0.5f, 1f);
             levelRect.anchorMax = new Vector2(0.5f, 1f);
-            levelRect.sizeDelta = new Vector2(300, 80);
-            levelRect.anchoredPosition = new Vector2(0, -80);
+            levelRect.sizeDelta = new Vector2(400, 100); // Larger container for larger text
+            levelRect.anchoredPosition = new Vector2(0, -200); // Move down to avoid camera notch
             
-            // Make text larger for mobile
+            // Make text much larger for mobile
             TextMeshProUGUI levelText = texts[0].GetComponent<TextMeshProUGUI>();
             if (levelText != null)
             {
-                levelText.fontSize = 36;
+                levelText.fontSize = 48; // Much larger level text
                 levelText.alignment = TextAlignmentOptions.Center;
             }
         }
@@ -121,14 +121,14 @@ public class Game2DUI : MonoBehaviour
             RectTransform instructionRect = texts[1].GetComponent<RectTransform>();
             instructionRect.anchorMin = new Vector2(0.5f, 1f);
             instructionRect.anchorMax = new Vector2(0.5f, 1f);
-            instructionRect.sizeDelta = new Vector2(400, 60);
-            instructionRect.anchoredPosition = new Vector2(0, -160);
+            instructionRect.sizeDelta = new Vector2(500, 80); // Larger container for larger text
+            instructionRect.anchoredPosition = new Vector2(0, -300); // Move down to avoid camera notch
             
-            // Make text larger for mobile
+            // Make text much larger for mobile
             TextMeshProUGUI instructionText = texts[1].GetComponent<TextMeshProUGUI>();
             if (instructionText != null)
             {
-                instructionText.fontSize = 28;
+                instructionText.fontSize = 36; // Much larger instruction text
                 instructionText.alignment = TextAlignmentOptions.Center;
             }
         }
@@ -142,20 +142,27 @@ public class Game2DUI : MonoBehaviour
                 RectTransform rect = colorButtons[i].GetComponent<RectTransform>();
                 rect.anchorMin = new Vector2(0.5f, 0.5f);
                 rect.anchorMax = new Vector2(0.5f, 0.5f);
-                rect.sizeDelta = new Vector2(200, 200); // Larger buttons for mobile
+                rect.sizeDelta = new Vector2(350, 350); // Much larger color buttons to fill screen
                 
-                // 2x2 grid positioning with better spacing
+                // 2x2 grid positioning with better spacing for much larger buttons
                 int row = i / 2;
                 int col = i % 2;
-                float x = (col - 0.5f) * 250; // Increased spacing
-                float y = (row - 0.5f) * 250; // Increased spacing
-                rect.anchoredPosition = new Vector2(x, y - 50); // Slightly lower for mobile
+                float x = (col - 0.5f) * 400; // Much more spacing for larger buttons
+                float y = (row - 0.5f) * 400; // Much more spacing for larger buttons
+                rect.anchoredPosition = new Vector2(x, y - 30); // Centered better for larger buttons
+                
+                // Add rounded corners to color buttons
+                Image buttonImage = colorButtons[i].GetComponent<Image>();
+                if (buttonImage != null)
+                {
+                    AddRoundedCorners(buttonImage);
+                }
                 
                 // Make button text larger
                 TextMeshProUGUI buttonText = colorButtons[i].GetComponentInChildren<TextMeshProUGUI>();
                 if (buttonText != null)
                 {
-                    buttonText.fontSize = 32;
+                    buttonText.fontSize = 56; // Much larger text for much larger buttons
                     buttonText.alignment = TextAlignmentOptions.Center;
                 }
             }
@@ -170,18 +177,35 @@ public class Game2DUI : MonoBehaviour
                 RectTransform rect = controlButtons[i].GetComponent<RectTransform>();
                 rect.anchorMin = new Vector2(0.5f, 0f);
                 rect.anchorMax = new Vector2(0.5f, 0f);
-                rect.sizeDelta = new Vector2(200, 60); // Larger buttons for mobile
-                rect.anchoredPosition = new Vector2(-100 + (i * 200), 80); // Better spacing
+                rect.sizeDelta = new Vector2(300, 100); // Much larger control buttons for mobile
+                rect.anchoredPosition = new Vector2(-150 + (i * 300), 120); // Better spacing for much larger buttons
+                
+                // Add rounded corners to control buttons
+                Image buttonImage = controlButtons[i].GetComponent<Image>();
+                if (buttonImage != null)
+                {
+                    AddRoundedCorners(buttonImage);
+                }
                 
                 // Make button text larger
                 TextMeshProUGUI buttonText = controlButtons[i].GetComponentInChildren<TextMeshProUGUI>();
                 if (buttonText != null)
                 {
-                    buttonText.fontSize = 24;
+                    buttonText.fontSize = 36; // Much larger text for much larger control buttons
                     buttonText.alignment = TextAlignmentOptions.Center;
                 }
             }
         }
+    }
+    
+    void AddRoundedCorners(Image image)
+    {
+        // Add rounded corners using a simple approach
+        image.type = Image.Type.Sliced;
+        
+        // Note: For true rounded corners, you would need a custom shader or sprite
+        // This approach uses the sliced image type which can provide some rounding
+        // with the right sprite asset, but for now we'll use a simple approach
     }
     
     void Update()

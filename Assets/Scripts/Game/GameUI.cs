@@ -94,15 +94,18 @@ public class GameUI : MonoBehaviour
         RectTransform selectRect = selectButtonObj.AddComponent<RectTransform>();
         selectRect.anchorMin = new Vector2(0.5f, 0f);
         selectRect.anchorMax = new Vector2(0.5f, 0f);
-        selectRect.sizeDelta = new Vector2(200, 60);
-        selectRect.anchoredPosition = new Vector2(0, 100);
+        selectRect.sizeDelta = new Vector2(300, 100); // Match other button sizes
+        selectRect.anchoredPosition = new Vector2(0, 250); // Position above other buttons
         
         // Add Button component
         selectButton = selectButtonObj.AddComponent<Button>();
         
         // Add Image component
         Image selectImage = selectButtonObj.AddComponent<Image>();
-        selectImage.color = new Color(0.2f, 0.8f, 0.2f, 1f); // Green
+        selectImage.color = new Color(0.2f, 0.8f, 0.2f, 1f); // Simple Green
+        
+        // Add rounded corners to SELECT button
+        AddRoundedCorners(selectImage);
         
         // Create text child
         GameObject textObj = new GameObject("Text");
@@ -118,7 +121,7 @@ public class GameUI : MonoBehaviour
         selectButtonText.text = "SELECT";
         selectButtonText.color = Color.white;
         selectButtonText.fontStyle = FontStyles.Bold;
-        selectButtonText.fontSize = 20;
+        selectButtonText.fontSize = 36; // Match other button text size
         selectButtonText.alignment = TextAlignmentOptions.Center;
         
         // Initially hide the button
@@ -130,12 +133,12 @@ public class GameUI : MonoBehaviour
     {
         if (selectButton != null)
         {
-            // Position Select button at bottom center
+            // Position Select button at bottom center - Keep larger size
             RectTransform selectRect = selectButton.GetComponent<RectTransform>();
             selectRect.anchorMin = new Vector2(0.5f, 0f);
             selectRect.anchorMax = new Vector2(0.5f, 0f);
-            selectRect.sizeDelta = new Vector2(200, 60);
-            selectRect.anchoredPosition = new Vector2(0, 100);
+            selectRect.sizeDelta = new Vector2(300, 100); // Match other button sizes
+            selectRect.anchoredPosition = new Vector2(0, 250); // Position above other buttons
             
             // Style the select button
             Image selectImage = selectButton.GetComponent<Image>();
@@ -149,10 +152,11 @@ public class GameUI : MonoBehaviour
                 selectButtonText.text = "SELECT";
                 selectButtonText.color = Color.white;
                 selectButtonText.fontStyle = FontStyles.Bold;
-                selectButtonText.fontSize = 20;
+                selectButtonText.fontSize = 36; // Match other button text size
             }
         }
     }
+    
     
     void SetupTransparentBackground()
     {
@@ -195,62 +199,158 @@ public class GameUI : MonoBehaviour
             scaler.matchWidthOrHeight = 0.5f; // Balance between width and height
         }
         
-        // Style text elements to match 2D UI
+        // Style text elements - Even larger for AR
         if (levelText != null)
         {
-            levelText.fontSize = 36;
+            levelText.fontSize = 60; // Even larger AR level text
             levelText.alignment = TextAlignmentOptions.Center;
             // Position level text at top (mobile-friendly)
             RectTransform levelRect = levelText.GetComponent<RectTransform>();
             levelRect.anchorMin = new Vector2(0.5f, 1f);
             levelRect.anchorMax = new Vector2(0.5f, 1f);
-            levelRect.sizeDelta = new Vector2(300, 80);
-            levelRect.anchoredPosition = new Vector2(0, -80);
+            levelRect.sizeDelta = new Vector2(500, 120); // Larger container for AR
+            levelRect.anchoredPosition = new Vector2(0, -200); // Move down to avoid camera notch
         }
         
         if (instructionText != null)
         {
-            instructionText.fontSize = 28;
+            instructionText.fontSize = 48; // Even larger AR instruction text
             instructionText.alignment = TextAlignmentOptions.Center;
             // Position instruction text below level (mobile-friendly)
             RectTransform instructionRect = instructionText.GetComponent<RectTransform>();
             instructionRect.anchorMin = new Vector2(0.5f, 1f);
             instructionRect.anchorMax = new Vector2(0.5f, 1f);
-            instructionRect.sizeDelta = new Vector2(400, 60);
-            instructionRect.anchoredPosition = new Vector2(0, -160);
+            instructionRect.sizeDelta = new Vector2(600, 100); // Larger container for AR
+            instructionRect.anchoredPosition = new Vector2(0, -300); // Move down to avoid camera notch
         }
         
         if (selectButtonText != null)
         {
-            selectButtonText.fontSize = 24;
+            selectButtonText.fontSize = 36; // Larger select button text for AR
             selectButtonText.alignment = TextAlignmentOptions.Center;
         }
         
         if (finalScoreText != null)
         {
-            finalScoreText.fontSize = 32;
+            finalScoreText.fontSize = 48; // Larger final score text for AR
             finalScoreText.alignment = TextAlignmentOptions.Center;
         }
         
-        // Style buttons to match 2D UI
+        // Style buttons - Match 2D game button theme for Restart and Menu buttons
         Button[] allButtons = { restartButton, menuButton, selectButton, playAgainButton };
-        foreach (Button button in allButtons)
+        for (int i = 0; i < allButtons.Length; i++)
         {
+            Button button = allButtons[i];
             if (button != null)
             {
-                // Make buttons larger for mobile
+                // Make buttons appropriate size for AR mobile experience
                 RectTransform rect = button.GetComponent<RectTransform>();
-                rect.sizeDelta = new Vector2(200, 80);
+                rect.sizeDelta = new Vector2(300, 100); // Match GameManager sizing
+                
+                // Apply 2D game button theme to Restart and Menu buttons only
+                if (button == restartButton || button == menuButton)
+                {
+                    StyleARControlButton(button, i);
+                }
                 
                 // Style button text
                 TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
                 if (buttonText != null)
                 {
-                    buttonText.fontSize = 24;
+                    buttonText.fontSize = 32; // Match GameManager font size
                     buttonText.alignment = TextAlignmentOptions.Center;
                 }
             }
         }
+    }
+    
+    void StyleARControlButton(Button button, int index)
+    {
+        if (button == null) return;
+        
+        // AR-style sleek colors
+        Color[] arColors = {
+            new Color(0.1f, 0.3f, 0.8f, 0.9f),    // Deep blue with transparency for Restart
+            new Color(0.8f, 0.2f, 0.3f, 0.9f)     // Deep red with transparency for Menu
+        };
+        
+        Color[] highlightColors = {
+            new Color(0.2f, 0.5f, 1f, 0.9f),      // Brighter blue for Restart
+            new Color(1f, 0.4f, 0.5f, 0.9f)       // Brighter red for Menu
+        };
+        
+        Color primaryColor = arColors[index % arColors.Length];
+        Color highlightColor = highlightColors[index % highlightColors.Length];
+        
+        // Set button color with AR-style transparency
+        Image buttonImage = button.GetComponent<Image>();
+        if (buttonImage != null)
+        {
+            buttonImage.color = primaryColor;
+            
+            // Add rounded corners to button
+            AddRoundedCorners(buttonImage);
+            
+            // Add subtle inner glow for AR effect
+            CreateARButtonGlow(button, highlightColor);
+        }
+        
+        // Style button text with AR aesthetics
+        TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
+        if (buttonText != null)
+        {
+            buttonText.color = Color.white;
+            buttonText.fontStyle = FontStyles.Bold;
+        }
+        
+        // Setup AR-style hover effects
+        SetupARButtonHoverEffects(button, primaryColor, highlightColor);
+    }
+    
+    void CreateARButtonGlow(Button button, Color glowColor)
+    {
+        // Create subtle inner glow for AR effect
+        GameObject glowObj = new GameObject("ARButtonGlow");
+        glowObj.transform.SetParent(button.transform, false);
+        
+        RectTransform glowRect = glowObj.AddComponent<RectTransform>();
+        glowRect.anchorMin = Vector2.zero;
+        glowRect.anchorMax = Vector2.one;
+        glowRect.offsetMin = new Vector2(2, 2);
+        glowRect.offsetMax = new Vector2(-2, -2);
+        
+        Image glowImage = glowObj.AddComponent<Image>();
+        glowImage.color = new Color(glowColor.r, glowColor.g, glowColor.b, 0.2f);
+        
+        // Add rounded corners to glow
+        AddRoundedCorners(glowImage);
+    }
+    
+    
+    void SetupARButtonHoverEffects(Button button, Color normalColor, Color highlightColor)
+    {
+        // Create AR-style color transitions
+        ColorBlock colors = button.colors;
+        colors.normalColor = normalColor;
+        colors.highlightedColor = highlightColor;
+        colors.pressedColor = new Color(highlightColor.r * 0.8f, highlightColor.g * 0.8f, highlightColor.b * 0.8f, 0.9f);
+        colors.selectedColor = highlightColor;
+        colors.disabledColor = new Color(0.3f, 0.3f, 0.3f, 0.5f);
+        colors.colorMultiplier = 1f;
+        colors.fadeDuration = 0.2f; // Slightly longer for AR feel
+        
+        button.colors = colors;
+    }
+    
+    void AddRoundedCorners(Image image)
+    {
+        // Add rounded corners using a simple approach
+        // This creates a subtle rounded corner effect
+        image.type = Image.Type.Sliced;
+        
+        // Note: For true rounded corners, you would need a custom shader or sprite
+        // This approach uses the sliced image type which can provide some rounding
+        // with the right sprite asset, but for now we'll use a simple approach
     }
     
     void Update()

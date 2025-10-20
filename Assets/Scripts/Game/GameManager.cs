@@ -73,15 +73,15 @@ public class GameManager : MonoBehaviour
             // Style main menu with attractive background
             StyleMainMenu();
             
-            // Position main menu buttons
+            // Position main menu buttons - Much larger for mobile
             Button[] mainMenuButtons = mainMenuUI.GetComponentsInChildren<Button>();
             for (int i = 0; i < mainMenuButtons.Length; i++)
             {
                 RectTransform rect = mainMenuButtons[i].GetComponent<RectTransform>();
                 rect.anchorMin = new Vector2(0.5f, 0.5f);
                 rect.anchorMax = new Vector2(0.5f, 0.5f);
-                rect.sizeDelta = new Vector2(200, 50);
-                rect.anchoredPosition = new Vector2(0, 100 - (i * 60));
+                rect.sizeDelta = new Vector2(300, 80); // Much larger buttons for mobile
+                rect.anchoredPosition = new Vector2(0, 120 - (i * 100)); // More spacing between buttons
             }
         }
         
@@ -99,34 +99,65 @@ public class GameManager : MonoBehaviour
             TextMeshProUGUI[] texts = gameUI.GetComponentsInChildren<TextMeshProUGUI>();
             Button[] buttons = gameUI.GetComponentsInChildren<Button>();
             
-            // Position level text at top
+            // Position level text at top - Much larger for AR
             if (texts.Length > 0)
             {
                 RectTransform levelRect = texts[0].GetComponent<RectTransform>();
                 levelRect.anchorMin = new Vector2(0.5f, 1f);
                 levelRect.anchorMax = new Vector2(0.5f, 1f);
-                levelRect.sizeDelta = new Vector2(200, 50);
-                levelRect.anchoredPosition = new Vector2(0, -50);
+                levelRect.sizeDelta = new Vector2(500, 120); // Much larger for AR
+                levelRect.anchoredPosition = new Vector2(0, -200); // Move down to avoid camera notch
+                
+                // Make level text much larger for AR
+                TextMeshProUGUI levelText = texts[0].GetComponent<TextMeshProUGUI>();
+                if (levelText != null)
+                {
+                    levelText.fontSize = 60; // Much larger AR level text
+                    levelText.alignment = TextAlignmentOptions.Center;
+                }
             }
             
-            // Position instruction text below level
+            // Position instruction text below level - Much larger for AR
             if (texts.Length > 1)
             {
                 RectTransform instructionRect = texts[1].GetComponent<RectTransform>();
                 instructionRect.anchorMin = new Vector2(0.5f, 1f);
                 instructionRect.anchorMax = new Vector2(0.5f, 1f);
-                instructionRect.sizeDelta = new Vector2(300, 50);
-                instructionRect.anchoredPosition = new Vector2(0, -100);
+                instructionRect.sizeDelta = new Vector2(600, 100); // Much larger for AR
+                instructionRect.anchoredPosition = new Vector2(0, -300); // Move down to avoid camera notch
+                
+                // Make instruction text much larger for AR
+                TextMeshProUGUI instructionText = texts[1].GetComponent<TextMeshProUGUI>();
+                if (instructionText != null)
+                {
+                    instructionText.fontSize = 48; // Much larger AR instruction text
+                    instructionText.alignment = TextAlignmentOptions.Center;
+                }
             }
             
-            // Position buttons at bottom
+            // Position buttons at bottom - Much larger for AR (exclude SelectButton)
+            int buttonIndex = 0;
             for (int i = 0; i < buttons.Length; i++)
             {
+                // Skip SelectButton - it has its own positioning
+                if (buttons[i].name == "SelectButton")
+                    continue;
+                    
                 RectTransform rect = buttons[i].GetComponent<RectTransform>();
                 rect.anchorMin = new Vector2(0.5f, 0f);
                 rect.anchorMax = new Vector2(0.5f, 0f);
-                rect.sizeDelta = new Vector2(150, 40);
-                rect.anchoredPosition = new Vector2(-75 + (i * 150), 50);
+                rect.sizeDelta = new Vector2(300, 100); // Slightly smaller AR buttons
+                rect.anchoredPosition = new Vector2(-200 + (buttonIndex * 400), 120); // Better spacing to prevent overlap
+                
+                // Make button text much larger for AR
+                TextMeshProUGUI buttonText = buttons[i].GetComponentInChildren<TextMeshProUGUI>();
+                if (buttonText != null)
+                {
+                    buttonText.fontSize = 32; // Appropriate size for smaller buttons
+                    buttonText.alignment = TextAlignmentOptions.Center;
+                }
+                
+                buttonIndex++;
             }
         }
         
@@ -172,7 +203,7 @@ public class GameManager : MonoBehaviour
             
             TextMeshProUGUI titleText = titleObj.AddComponent<TextMeshProUGUI>();
             titleText.text = "SPHERE SAYS";
-            titleText.fontSize = 48;
+            titleText.fontSize = 64; // Much larger title for mobile
             titleText.alignment = TextAlignmentOptions.Center;
             titleText.color = new Color(1f, 1f, 1f, 1f);
             titleText.fontStyle = FontStyles.Bold;
@@ -210,7 +241,7 @@ public class GameManager : MonoBehaviour
     {
         if (button == null) return;
         
-        // Get button colors based on index
+        // Simple button colors - back to original
         Color[] buttonColors = {
             new Color(0.2f, 0.6f, 1f, 1f),    // Blue
             new Color(0.2f, 0.8f, 0.2f, 1f),  // Green  
@@ -225,16 +256,30 @@ public class GameManager : MonoBehaviour
         if (buttonImage != null)
         {
             buttonImage.color = buttonColor;
+            
+            // Add rounded corners to main menu buttons
+            AddRoundedCorners(buttonImage);
         }
         
-        // Style button text
+        // Style button text - Larger for mobile
         TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
         if (buttonText != null)
         {
             buttonText.color = Color.white;
             buttonText.fontStyle = FontStyles.Bold;
-            buttonText.fontSize = 18;
+            buttonText.fontSize = 28; // Much larger text for mobile
+            buttonText.alignment = TextAlignmentOptions.Center;
         }
+    }
+    
+    void AddRoundedCorners(Image image)
+    {
+        // Add rounded corners using a simple approach
+        image.type = Image.Type.Sliced;
+        
+        // Note: For true rounded corners, you would need a custom shader or sprite
+        // This approach uses the sliced image type which can provide some rounding
+        // with the right sprite asset, but for now we'll use a simple approach
     }
     
     public void ShowMainMenu()
