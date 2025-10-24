@@ -54,7 +54,6 @@ public class ARObjectSpawnerAnchored : MonoBehaviour
     
     public void TriggerSpawn()
     {
-        Debug.Log("TriggerSpawn called");
         // Clear existing objects first
         ClearExistingObjects();
         
@@ -205,7 +204,6 @@ public class ARObjectSpawnerAnchored : MonoBehaviour
 
         // Instantiate orbiter as child of anchor
         GameObject obj = Instantiate(orbiterPrefab, anchor.transform);
-        Debug.Log($"Spawned orbiter: {obj.name}, Components: {obj.GetComponents<MonoBehaviour>().Length}");
         var rootRenderer = obj.GetComponent<Renderer>();
         if (rootRenderer == null)
         {

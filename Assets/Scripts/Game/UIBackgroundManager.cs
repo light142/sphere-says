@@ -33,7 +33,6 @@ public class UIBackgroundManager : MonoBehaviour
         UIBackgroundManager[] managers = GetComponents<UIBackgroundManager>();
         if (managers.Length > 1)
         {
-            Debug.LogWarning("Multiple UIBackgroundManager components detected, destroying duplicate");
             Destroy(this);
             return;
         }

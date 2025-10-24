@@ -25,14 +25,8 @@ public class OrbEffectManager : MonoBehaviour
             currentOrbEffect = Instantiate(specificOrbPrefab, sphereTransform);
             currentOrbEffect.transform.localPosition = orbOffset;
             
-            // Debug: Log the original prefab scale
-            Debug.Log($"Original prefab scale: {specificOrbPrefab.transform.localScale}");
-            Debug.Log($"Our orbScale: {orbScale}");
-            
             // Force a very small scale regardless of prefab scale
             currentOrbEffect.transform.localScale = Vector3.one * orbScale;
-            
-            Debug.Log($"Final scale: {currentOrbEffect.transform.localScale}");
             
             // Disable the original orb's collider to avoid interference
             Collider orbCollider = currentOrbEffect.GetComponent<Collider>();
@@ -95,7 +89,6 @@ public class OrbEffectManager : MonoBehaviour
         if (currentOrbEffect != null)
         {
             currentOrbEffect.transform.localScale = Vector3.one * 0.001f;
-            Debug.Log($"Forced tiny scale: {currentOrbEffect.transform.localScale}");
         }
     }
     

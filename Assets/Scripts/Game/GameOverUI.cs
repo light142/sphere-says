@@ -225,6 +225,8 @@ public class GameOverUI : MonoBehaviour
     
     public void PlayAgain()
     {
+        // Track play_again event
+        TelemetryManager.Instance?.TrackPlayAgain();
         GameManager.Instance.RestartGame();
     }
     
@@ -235,6 +237,9 @@ public class GameOverUI : MonoBehaviour
     
     public void QuitGame()
     {
+        // Track quit_application event
+        TelemetryManager.Instance?.TrackQuitApplication();
+        
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
         #else

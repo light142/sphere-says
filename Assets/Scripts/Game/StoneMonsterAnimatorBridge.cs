@@ -25,8 +25,6 @@ public class StoneMonsterAnimatorBridge : MonoBehaviour
 			legacyAnimation = GetComponentInChildren<Animation>(true);
 		}
 		
-		// Debug logging
-		Debug.Log($"StoneMonsterAnimatorBridge Awake - Legacy Animation: {(legacyAnimation != null ? "Found" : "NOT FOUND")}, Controller: {(controller != null ? "Found" : "NOT FOUND")}");
 	}
 
 	void OnEnable()
@@ -56,7 +54,6 @@ public class StoneMonsterAnimatorBridge : MonoBehaviour
 
 	private void HandleStartedOrbiting()
 	{
-		Debug.Log($"HandleStartedOrbiting called - Legacy Animation: {(legacyAnimation != null ? "Found" : "NULL")}");
 		if (!isMoving)
 		{
 			Play(RUN);
@@ -66,8 +63,6 @@ public class StoneMonsterAnimatorBridge : MonoBehaviour
 
 	private void HandleReachedTarget()
 	{
-		Debug.Log($"HandleReachedTarget called - Legacy Animation: {(legacyAnimation != null ? "Found" : "NULL")}");
-		
 		// Always fix facing direction when reaching target, regardless of movement state
 		FixFacingDirection();
 		
@@ -80,14 +75,11 @@ public class StoneMonsterAnimatorBridge : MonoBehaviour
 
 	private void HandleOrbiterShrink()
 	{
-		Debug.Log($"HandleOrbiterShrink called - Legacy Animation: {(legacyAnimation != null ? "Found" : "NULL")}");
 		Play(DEATH);
 	}
 
 	private void HandleOrbiterGrow()
 	{
-		Debug.Log($"HandleOrbiterGrow called - Legacy Animation: {(legacyAnimation != null ? "Found" : "NULL")}");
-		
 		// Force face target when growing (appearing)
 		FixFacingDirection();
 		
@@ -121,17 +113,12 @@ public class StoneMonsterAnimatorBridge : MonoBehaviour
 		if (legacyAnimation != null && legacyAnimation[clipName] != null)
 		{
 			legacyAnimation.CrossFade(clipName);
-			Debug.Log($"Playing animation: {clipName}");
 			
 			// Fix facing direction for movement animations
 			if (clipName == RUN)
 			{
 				FixFacingDirection();
 			}
-		}
-		else
-		{
-			Debug.LogWarning($"Cannot play animation '{clipName}' - Animation component or clip not found");
 		}
 	}
 	

@@ -50,7 +50,20 @@ public class GameManager : MonoBehaviour
         // Find the AR spawner component
         arSpawner = FindFirstObjectByType<ARObjectSpawnerAnchored>();
         
+        // Initialize telemetry manager
+        InitializeTelemetry();
+        
         ShowMainMenu();
+    }
+    
+    void InitializeTelemetry()
+    {
+        // Create telemetry manager if it doesn't exist
+        if (TelemetryManager.Instance == null)
+        {
+            GameObject telemetryObj = new GameObject("TelemetryManager");
+            telemetryObj.AddComponent<TelemetryManager>();
+        }
     }
     
     void SetupARComponents()
@@ -304,6 +317,9 @@ public class GameManager : MonoBehaviour
     {
         currentGameMode = GameMode.Mode2D;
         
+        // Track initialise_game event
+        TelemetryManager.Instance?.TrackInitialiseGame();
+        
         // Unsubscribe from orbiter events when switching to 2D mode
         if (simonGame != null)
         {
@@ -347,6 +363,9 @@ public class GameManager : MonoBehaviour
     public void StartARGame()
     {
         currentGameMode = GameMode.ModeAR;
+        
+        // Track initialise_game event
+        TelemetryManager.Instance?.TrackInitialiseGame();
         
         // Stop any existing delayed start coroutine
         StopAllCoroutines();
@@ -428,10 +447,29 @@ public class GameManager : MonoBehaviour
         }
         
         simonGame.StartNewGame();
+        
+        // Track start_game event
+        TelemetryManager.Instance?.TrackStartGame();
     }
     
     public void GameOver()
     {
+        // Track game_over event with sequence and player input data
+        if (simonGame != null)
+        {
+            // Get current sequence and player input from SimonSaysGame
+            var sequence = simonGame.GetCurrentSequence();
+            var playerInput = simonGame.GetCurrentPlayerInput();
+            TelemetryManager.Instance?.TrackGameOver(sequence, playerInput);
+        }
+        else
+        {
+            TelemetryManager.Instance?.TrackGameOver();
+        }
+        
+        // Reset level when game is over
+        currentLevel = 1;
+        
         // Hide current game UI
         if (gameUI != null) 
         {
@@ -457,6 +495,9 @@ public class GameManager : MonoBehaviour
     
     public void RestartGame()
     {
+        // Track restart_game event
+        TelemetryManager.Instance?.TrackRestartGame();
+        
         currentLevel = 1;
         
         // Hide game over UI
@@ -497,6 +538,12 @@ public class GameManager : MonoBehaviour
     
     public void BackToMenu()
     {
+        // Track back_to_menu event
+        TelemetryManager.Instance?.TrackBackToMenu();
+        
+        // Reset level when going back to menu
+        currentLevel = 1;
+        
         // Hide game over UI
         if (gameOverUI != null) 
         {

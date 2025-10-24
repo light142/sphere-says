@@ -52,6 +52,9 @@ public class MainMenuUI : MonoBehaviour
     
     public void QuitGame()
     {
+        // Track quit_application event
+        TelemetryManager.Instance?.TrackQuitApplication();
+        
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
         #else

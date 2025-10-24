@@ -84,7 +84,14 @@ public class SimonSaysGame : MonoBehaviour
         
         OnColorPressed?.Invoke(color);
         
-        if (color == sequence[currentInputIndex])
+        // Determine the correct color that should have been selected
+        Color correctColor = sequence[currentInputIndex];
+        bool isCorrect = color == correctColor;
+        
+        // Track player_select event with current sequence, player input, and correct color
+        TelemetryManager.Instance?.TrackPlayerSelect(color, sequence, playerInput, correctColor);
+        
+        if (isCorrect)
         {
             playerInput.Add(color);
             currentInputIndex++;
@@ -131,11 +138,15 @@ public class SimonSaysGame : MonoBehaviour
             if (OnOrbiterMoveToColor != null)
             {
                 waitingForOrbiter = true;
+                // Track simon_select_start event for AR mode with current sequence
+                TelemetryManager.Instance?.TrackSimonSelectStart(color, sequence);
                 OnOrbiterMoveToColor?.Invoke(color); // Trigger orbiter movement AFTER setting waitingForOrbiter
                 
                 yield return new WaitUntil(() => !waitingForOrbiter);
                 
                 // NOW highlight the color after orbiter has reached the target
+                // Track simon_select_end event for AR mode with current sequence
+                TelemetryManager.Instance?.TrackSimonSelectEnd(color, sequence);
                 OnColorHighlight?.Invoke(color);
                 
                 // Brief pause after highlighting (configurable delay)
@@ -147,6 +158,8 @@ public class SimonSaysGame : MonoBehaviour
             else
             {
                 // In 2D mode, highlight immediately and use the original timing
+                // Track simon_select event for 2D mode with current sequence
+                TelemetryManager.Instance?.TrackSimonSelect(color, sequence);
                 OnColorHighlight?.Invoke(color);
                 yield return new WaitForSeconds(sequenceDelay);
             }
@@ -172,6 +185,9 @@ public class SimonSaysGame : MonoBehaviour
         int currentLevel = GameManager.Instance.currentLevel;
         currentLevel++;
         GameManager.Instance.currentLevel = currentLevel;
+        
+        // Track level_complete event with current sequence and player input
+        TelemetryManager.Instance?.TrackLevelComplete(sequence, playerInput);
         
         if (currentLevel > GameManager.Instance.maxLevel)
         {
@@ -232,5 +248,16 @@ public class SimonSaysGame : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         isProcessingInput = false;
+    }
+    
+    // Public methods to get current game state for telemetry
+    public List<Color> GetCurrentSequence()
+    {
+        return new List<Color>(sequence);
+    }
+    
+    public List<Color> GetCurrentPlayerInput()
+    {
+        return new List<Color>(playerInput);
     }
 }
