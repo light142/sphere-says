@@ -48,6 +48,8 @@ public class TelemetryManager : MonoBehaviour
     public const string RESTART_GAME = "restart_game";
     public const string PLAY_AGAIN = "play_again";
     public const string BACK_TO_MENU = "back_to_menu";
+    public const string SHOW_BANNER_2D = "show_banner_2d";
+    public const string SHOW_BANNER_AR = "show_banner_ar";
 
     void Awake()
     {
@@ -440,6 +442,8 @@ public class TelemetryManager : MonoBehaviour
     public void TrackRestartGame() => TrackEvent(RESTART_GAME);
     public void TrackPlayAgain() => TrackEvent(PLAY_AGAIN);
     public void TrackBackToMenu() => TrackEvent(BACK_TO_MENU);
+    public void TrackShowBanner2D() => TrackEvent(SHOW_BANNER_2D);
+    public void TrackShowBannerAR() => TrackEvent(SHOW_BANNER_AR);
 
     private string GenerateGameReference()
     {

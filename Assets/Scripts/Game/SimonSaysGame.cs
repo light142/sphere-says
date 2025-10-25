@@ -41,8 +41,18 @@ public class SimonSaysGame : MonoBehaviour
     
     public void StartNewGame()
     {
+        // Track start_game event
+        TelemetryManager.Instance?.TrackStartGame();
+
         // Stop any existing coroutines to prevent multiple running
         StopAllCoroutines();
+        
+        // Reset all game states immediately
+        isIdle = false;
+        isPlayingSequence = true; // Set to true immediately to prevent select button from appearing
+        isWaitingForInput = false;
+        isProcessingInput = false;
+        waitingForOrbiter = false; // Critical: Reset orbiter waiting state
         
         sequence.Clear();
         playerInput.Clear();
@@ -50,11 +60,28 @@ public class SimonSaysGame : MonoBehaviour
         AddRandomColor();
         StartCoroutine(DelayStart());
     }
+    
+    public void StopGame()
+    {
+        // Stop any existing coroutines
+        StopAllCoroutines();
+        
+        // Reset all game states
+        isIdle = true;
+        isPlayingSequence = false;
+        isWaitingForInput = false;
+        isProcessingInput = false;
+        waitingForOrbiter = false; // Critical: Reset orbiter waiting state
+        
+        // Clear game data
+        sequence.Clear();
+        playerInput.Clear();
+        currentInputIndex = 0;
+    }
 
     private IEnumerator DelayStart()
     {
         yield return new WaitForSeconds(levelTransitionDelay);
-        isIdle = false; // Game is starting, no longer idle
         StartCoroutine(PlaySequence());
     }
     
@@ -176,6 +203,9 @@ public class SimonSaysGame : MonoBehaviour
         isProcessingInput = false; // Reset processing flag when sequence ends
         currentInputIndex = 0;
         playerInput.Clear();
+        
+        // Force UI update by invoking OnGetReady event
+        OnGetReady?.Invoke();
     }
     
     private IEnumerator NextLevel()

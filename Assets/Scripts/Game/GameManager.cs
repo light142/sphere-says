@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     
     private SimonSaysGame simonGame;
     private ARObjectSpawnerAnchored arSpawner;
+    private GameObject currentBanner;
     
     public enum GameMode
     {
@@ -54,6 +55,9 @@ public class GameManager : MonoBehaviour
         InitializeTelemetry();
         
         ShowMainMenu();
+        
+        // Show startup banner
+        ShowStartupBanner();
     }
     
     void InitializeTelemetry()
@@ -313,16 +317,34 @@ public class GameManager : MonoBehaviour
         if (gameOverUI != null) gameOverUI.SetActive(false);
     }
     
+    void ShowStartupBanner()
+    {
+        if (currentBanner != null)
+        {
+            Destroy(currentBanner);
+        }
+        currentBanner = new GameObject("StartupBanner");
+        SimpleBanner banner = currentBanner.AddComponent<SimpleBanner>();
+        banner.ShowBanner(
+            "Welcome to Sphere Says!",
+            "Get ready to play an exciting memory game!\n\nWatch the sequence and repeat it back.",
+            "START GAME",
+            () => { /* Banner confirmed, game ready */ }
+        );
+    }
+    
     public void Start2DGame()
     {
+
         currentGameMode = GameMode.Mode2D;
         
         // Track initialise_game event
         TelemetryManager.Instance?.TrackInitialiseGame();
         
-        // Unsubscribe from orbiter events when switching to 2D mode
+        // Stop the game and clean up orbiter state when switching to 2D mode
         if (simonGame != null)
         {
+            simonGame.StopGame();
             simonGame.OnOrbiterMoveToColor -= OnOrbiterMoveToColor;
             simonGame.OnOrbiterReachedTarget -= OnOrbiterReachedTarget;
         }
@@ -367,15 +389,23 @@ public class GameManager : MonoBehaviour
         // Track initialise_game event
         TelemetryManager.Instance?.TrackInitialiseGame();
         
-        // Stop any existing delayed start coroutine
+        // Stop any existing delayed start coroutine and clean up game state
         StopAllCoroutines();
+        
+        // Stop the game and clean up orbiter state when switching to AR mode
+        if (simonGame != null)
+        {
+            simonGame.StopGame();
+        }
         
         // Enable AR components for AR mode
         if (arSpawner != null)
         {
             arSpawner.enabled = true;
             arSpawner.TriggerSpawn();
+
             StartGame();
+            
         }
     }
     
@@ -450,12 +480,47 @@ public class GameManager : MonoBehaviour
         {
             simonGame.OnOrbiterMoveToColor += OnOrbiterMoveToColor;
             simonGame.OnOrbiterReachedTarget += OnOrbiterReachedTarget;
+            
+            // Show AR game banner
+            if (currentBanner != null)
+            {
+                Destroy(currentBanner);
+            }
+            // Track show_banner_ar event
+            TelemetryManager.Instance?.TrackShowBannerAR();
+            
+            currentBanner = new GameObject("ARGameBanner");
+            SimpleBanner banner = currentBanner.AddComponent<SimpleBanner>();
+            banner.ShowBanner(
+                "AR Mode Activated!",
+                "You're about to enter Augmented Reality mode!\n\nLook around and find the colored spheres in your environment.",
+                "ENTER AR",
+                () => {
+                    simonGame.StartNewGame();
+                }
+            );
         }
-        
-        simonGame.StartNewGame();
-        
-        // Track start_game event
-        TelemetryManager.Instance?.TrackStartGame();
+        else
+        {
+            // Show 2D game banner
+            if (currentBanner != null)
+            {
+                Destroy(currentBanner);
+            }
+            // Track show_banner_2d event
+            TelemetryManager.Instance?.TrackShowBanner2D();
+            
+            currentBanner = new GameObject("2DGameBanner");
+            SimpleBanner banner = currentBanner.AddComponent<SimpleBanner>();
+            banner.ShowBanner(
+                "2D Mode Selected!",
+                "You're about to play in 2D mode!\n\nUse the colored buttons to repeat the sequence.",
+                "START 2D",
+                () => {
+                    simonGame.StartNewGame();
+                }
+            );
+        }
     }
     
     public void GameOver()
@@ -512,10 +577,10 @@ public class GameManager : MonoBehaviour
             gameOverUI.SetActive(false);
         }
         
-        // Set game to idle state during restart
+        // Stop the game completely to clean up orbiter state
         if (simonGame != null)
         {
-            simonGame.SetIdle(true);
+            simonGame.StopGame();
         }
         
         // Clear AR objects if in AR mode
@@ -563,10 +628,10 @@ public class GameManager : MonoBehaviour
             simonGame.OnOrbiterReachedTarget -= OnOrbiterReachedTarget;
         }
         
-        // Set game to idle state when going back to menu
+        // Stop the game completely to clean up orbiter state
         if (simonGame != null)
         {
-            simonGame.SetIdle(true);
+            simonGame.StopGame();
         }
         
         // Clear AR objects if in AR mode

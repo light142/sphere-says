@@ -52,6 +52,7 @@ public class Game2DUI : MonoBehaviour
             simonGame.OnGameOver += OnGameOver;
             simonGame.OnLevelComplete += OnLevelComplete;
             simonGame.OnColorHighlight += OnColorHighlight;
+            simonGame.OnGetReady += OnGetReady;
         }
         
         if (restartButton != null)
@@ -271,10 +272,28 @@ public class Game2DUI : MonoBehaviour
                 {
                     instructionText.text = "Get ready...";
                 }
+                
             }
             else
             {
                 instructionText.text = "Simon Says Game not found!";
+                // Try to find the SimonSaysGame again
+                simonGame = FindFirstObjectByType<SimonSaysGame>();
+                if (simonGame != null)
+                {
+                    // Reconnect events
+                    simonGame.OnSequenceComplete -= OnSequenceComplete;
+                    simonGame.OnGameOver -= OnGameOver;
+                    simonGame.OnLevelComplete -= OnLevelComplete;
+                    simonGame.OnColorHighlight -= OnColorHighlight;
+                    simonGame.OnGetReady -= OnGetReady;
+                    
+                    simonGame.OnSequenceComplete += OnSequenceComplete;
+                    simonGame.OnGameOver += OnGameOver;
+                    simonGame.OnLevelComplete += OnLevelComplete;
+                    simonGame.OnColorHighlight += OnColorHighlight;
+                    simonGame.OnGetReady += OnGetReady;
+                }
             }
         }
     }
@@ -367,6 +386,12 @@ public class Game2DUI : MonoBehaviour
             simonGame.OnGameOver -= OnGameOver;
             simonGame.OnLevelComplete -= OnLevelComplete;
             simonGame.OnColorHighlight -= OnColorHighlight;
+            simonGame.OnGetReady -= OnGetReady;
         }
+    }
+    
+    void OnGetReady()
+    {
+        UpdateUI();
     }
 }
