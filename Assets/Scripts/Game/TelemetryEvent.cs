@@ -9,7 +9,7 @@ public class TelemetryEvent
     public string event_type;
     public string event_category;
     public string ip_address;
-    public string mac_address;
+    public string player_id;
     public string session_id;
     public string game_reference;
     public int game_level;
@@ -39,7 +39,7 @@ public class TelemetryEvent
         game_level = gameLevel;
         game_reference = gameReference; // Only set if provided, otherwise null
         ip_address = GetLocalIPAddress();
-        mac_address = GetMacAddress();
+        player_id = GetPlayerId();
     }
 
     public void SetColor(Color color)
@@ -100,33 +100,20 @@ public class TelemetryEvent
     }
 
 
-    private string GetMacAddress()
+    private string GetPlayerId()
     {
-        try
+        // Get or create a persistent player ID
+        string playerId = PlayerPrefs.GetString("SphereGame_PlayerId", "");
+        
+        if (string.IsNullOrEmpty(playerId))
         {
-            // Get the first network interface's MAC address
-            var networkInterfaces = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces();
-            
-            foreach (var networkInterface in networkInterfaces)
-            {
-                // Skip loopback and non-operational interfaces
-                if (networkInterface.NetworkInterfaceType == System.Net.NetworkInformation.NetworkInterfaceType.Loopback ||
-                    networkInterface.OperationalStatus != System.Net.NetworkInformation.OperationalStatus.Up)
-                    continue;
-                
-                var macAddress = networkInterface.GetPhysicalAddress();
-                if (macAddress != null && macAddress.ToString() != "000000000000")
-                {
-                    return macAddress.ToString();
-                }
-            }
-        }
-        catch
-        {
-            // Fallback if MAC address detection fails
+            // Generate new player ID and store it
+            playerId = Guid.NewGuid().ToString();
+            PlayerPrefs.SetString("SphereGame_PlayerId", playerId);
+            PlayerPrefs.Save();
         }
         
-        return "unknown";
+        return playerId;
     }
 
     private string GenerateGameReference()

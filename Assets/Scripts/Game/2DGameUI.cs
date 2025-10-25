@@ -41,6 +41,13 @@ public class Game2DUI : MonoBehaviour
         simonGame = FindFirstObjectByType<SimonSaysGame>();
         if (simonGame != null)
         {
+            // Unsubscribe from previous events first to prevent duplicates
+            simonGame.OnSequenceComplete -= OnSequenceComplete;
+            simonGame.OnGameOver -= OnGameOver;
+            simonGame.OnLevelComplete -= OnLevelComplete;
+            simonGame.OnColorHighlight -= OnColorHighlight;
+            
+            // Subscribe to events
             simonGame.OnSequenceComplete += OnSequenceComplete;
             simonGame.OnGameOver += OnGameOver;
             simonGame.OnLevelComplete += OnLevelComplete;
@@ -349,5 +356,17 @@ public class Game2DUI : MonoBehaviour
     public void BackToMenu()
     {
         GameManager.Instance.BackToMenu();
+    }
+    
+    void OnDestroy()
+    {
+        // Unsubscribe from events to prevent memory leaks and duplicate calls
+        if (simonGame != null)
+        {
+            simonGame.OnSequenceComplete -= OnSequenceComplete;
+            simonGame.OnGameOver -= OnGameOver;
+            simonGame.OnLevelComplete -= OnLevelComplete;
+            simonGame.OnColorHighlight -= OnColorHighlight;
+        }
     }
 }

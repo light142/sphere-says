@@ -11,18 +11,17 @@ public class TelemetryManager : MonoBehaviour
 
     [Header("API Configuration")]
     public string apiEndpoint = "https://sphere-game-data-api.vercel.app/api/game-data/";
-    public float retryDelay = 3f; // Reduced from 10s to 3s for faster retries
+    public float retryDelay = 3f;
     public int maxQueueSize = 100;
 
     [Header("Performance")]
-    public int maxConcurrentRequests = 3; // Allow up to 3 concurrent requests
+    public int maxConcurrentRequests = 5; // Allow up to 3 concurrent requests
     
     [Header("Debug")]
     public bool enableTelemetry = true;
-    public bool debugMode = true;
+    public bool debugMode = false;
 
     private Queue<TelemetryEvent> eventQueue = new Queue<TelemetryEvent>();
-    private bool isProcessing = false;
     private int activeRequests = 0; // Track concurrent requests
     private string sessionId;
     private string currentGameReference;
@@ -408,55 +407,19 @@ public class TelemetryManager : MonoBehaviour
     {
         if (enableTelemetry)
         {
+            // Just queue the quit event - don't try to send it
             TrackEvent(QUIT_APPLICATION);
-            // Wait for all events to be sent before quitting
-            StartCoroutine(FlushQueueAndWait());
-        }
-        else
-        {
-            StopProcessing();
-        }
-    }
-
-    private IEnumerator FlushQueueAndWait()
-    {
-        if (debugMode)
-        {
-            Debug.Log("[Telemetry] Flushing queue before application quit...");
-        }
-
-        // Wait until queue is empty or timeout
-        float timeout = 30f; // 30 second timeout
-        float elapsed = 0f;
-        
-        while (eventQueue.Count > 0 && elapsed < timeout)
-        {
-            if (debugMode)
-            {
-                Debug.Log($"[Telemetry] Waiting for {eventQueue.Count} events to be sent...");
-            }
             
-            yield return new WaitForSeconds(0.5f);
-            elapsed += 0.5f;
-        }
-
-        if (eventQueue.Count > 0)
-        {
             if (debugMode)
             {
-                Debug.LogWarning($"[Telemetry] Timeout reached, {eventQueue.Count} events not sent");
+                Debug.Log($"[Telemetry] App quitting - {eventQueue.Count} events queued");
             }
         }
-        else
-        {
-            if (debugMode)
-            {
-                Debug.Log("[Telemetry] All events sent successfully");
-            }
-        }
-
+        
+        // Clean shutdown - don't block
         StopProcessing();
     }
+
 
     // Public methods for easy access
     public void TrackSessionStart() => TrackEvent(SESSION_START);

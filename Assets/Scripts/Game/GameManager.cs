@@ -433,6 +433,12 @@ public class GameManager : MonoBehaviour
             simonGame = gameObject.AddComponent<SimonSaysGame>();
         }
         
+        // Unsubscribe from previous events first to prevent duplicates
+        simonGame.OnGameOver -= GameOver;
+        simonGame.OnSequenceComplete -= OnSequenceComplete;
+        simonGame.OnLevelComplete -= OnLevelComplete;
+        simonGame.OnGetReady -= OnGetReady;
+        
         // Subscribe to game events
         simonGame.OnGameOver += GameOver;
         simonGame.OnSequenceComplete += OnSequenceComplete;

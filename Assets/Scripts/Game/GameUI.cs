@@ -37,6 +37,15 @@ public class GameUI : MonoBehaviour
         simonGame = FindFirstObjectByType<SimonSaysGame>();
         if (simonGame != null)
         {
+            // Unsubscribe from previous events first to prevent duplicates
+            simonGame.OnSequenceComplete -= OnSequenceComplete;
+            simonGame.OnGameOver -= OnGameOver;
+            simonGame.OnLevelComplete -= OnLevelComplete;
+            simonGame.OnColorHighlight -= OnColorHighlight;
+            simonGame.OnOrbiterShrink -= OnOrbiterShrink;
+            simonGame.OnOrbiterGrow -= OnOrbiterGrow;
+            
+            // Subscribe to events
             simonGame.OnSequenceComplete += OnSequenceComplete;
             simonGame.OnGameOver += OnGameOver;
             simonGame.OnLevelComplete += OnLevelComplete;
@@ -56,6 +65,20 @@ public class GameUI : MonoBehaviour
             
         if (playAgainButton != null)
             playAgainButton.onClick.AddListener(RestartGame);
+    }
+    
+    void OnDestroy()
+    {
+        // Unsubscribe from events to prevent memory leaks and duplicate calls
+        if (simonGame != null)
+        {
+            simonGame.OnSequenceComplete -= OnSequenceComplete;
+            simonGame.OnGameOver -= OnGameOver;
+            simonGame.OnLevelComplete -= OnLevelComplete;
+            simonGame.OnColorHighlight -= OnColorHighlight;
+            simonGame.OnOrbiterShrink -= OnOrbiterShrink;
+            simonGame.OnOrbiterGrow -= OnOrbiterGrow;
+        }
     }
     
     void SetupARSelection()
