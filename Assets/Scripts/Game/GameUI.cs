@@ -19,6 +19,9 @@ public class GameUI : MonoBehaviour
     public TextMeshProUGUI finalScoreText;
     public Button playAgainButton;
     
+    [Header("Encouragement System")]
+    public EncouragementPopup encouragementPopup;
+    
     private SimonSaysGame simonGame;
     private ARSelectionManager selectionManager;
     private OrbiterController orbiterController;
@@ -34,6 +37,9 @@ public class GameUI : MonoBehaviour
         // Setup AR selection system
         SetupARSelection();
         
+        // Setup encouragement system
+        SetupEncouragementSystem();
+        
         simonGame = FindFirstObjectByType<SimonSaysGame>();
         if (simonGame != null)
         {
@@ -44,6 +50,7 @@ public class GameUI : MonoBehaviour
             simonGame.OnColorHighlight -= OnColorHighlight;
             simonGame.OnOrbiterShrink -= OnOrbiterShrink;
             simonGame.OnOrbiterGrow -= OnOrbiterGrow;
+            simonGame.OnCorrectColorSelected -= OnCorrectColorSelected;
             
             // Subscribe to events
             simonGame.OnSequenceComplete += OnSequenceComplete;
@@ -52,6 +59,7 @@ public class GameUI : MonoBehaviour
             simonGame.OnColorHighlight += OnColorHighlight; // ✅ Added missing event subscription
             simonGame.OnOrbiterShrink += OnOrbiterShrink;
             simonGame.OnOrbiterGrow += OnOrbiterGrow;
+            simonGame.OnCorrectColorSelected += OnCorrectColorSelected;
         }
         
         // Find orbiter controller
@@ -69,6 +77,12 @@ public class GameUI : MonoBehaviour
     
     void OnDestroy()
     {
+        // Hide encouragement popup immediately
+        if (EncouragementPopup.Instance != null)
+        {
+            EncouragementPopup.Instance.Cleanup();
+        }
+        
         // Unsubscribe from events to prevent memory leaks and duplicate calls
         if (simonGame != null)
         {
@@ -78,6 +92,7 @@ public class GameUI : MonoBehaviour
             simonGame.OnColorHighlight -= OnColorHighlight;
             simonGame.OnOrbiterShrink -= OnOrbiterShrink;
             simonGame.OnOrbiterGrow -= OnOrbiterGrow;
+            simonGame.OnCorrectColorSelected -= OnCorrectColorSelected;
         }
     }
     
@@ -105,6 +120,22 @@ public class GameUI : MonoBehaviour
         
         // Position and style Select button
         StyleSelectButton();
+    }
+    
+    void SetupEncouragementSystem()
+    {
+        // Get or create the singleton encouragement popup
+        if (EncouragementPopup.Instance == null)
+        {
+            GameObject encouragementObj = new GameObject("EncouragementPopup");
+            encouragementPopup = encouragementObj.AddComponent<EncouragementPopup>();
+            Debug.Log("Created new EncouragementPopup instance");
+        }
+        else
+        {
+            encouragementPopup = EncouragementPopup.Instance;
+            Debug.Log("Using existing EncouragementPopup instance");
+        }
     }
     
     void CreateSelectButton()
@@ -137,11 +168,16 @@ public class GameUI : MonoBehaviour
         textRect.offsetMax = Vector2.zero;
         
         selectButtonText = textObj.AddComponent<TextMeshProUGUI>();
-        selectButtonText.text = "SELECT";
-        selectButtonText.color = Color.white;
+        selectButtonText.text = "THAT ONE!";
+        selectButtonText.color = Color.white; // Clean white text
         selectButtonText.fontStyle = FontStyles.Bold;
         selectButtonText.fontSize = 36; // Match other button text size
         selectButtonText.alignment = TextAlignmentOptions.Center;
+        selectButtonText.outlineColor = Color.black; // Black outline for contrast
+        selectButtonText.outlineWidth = 0.5f; // Thicker outline for better visibility
+        
+        // Start pulsing animation
+        StartCoroutine(PulseSelectText());
         
         // Initially hide the button
         selectButtonObj.SetActive(false);
@@ -168,10 +204,12 @@ public class GameUI : MonoBehaviour
             
             if (selectButtonText != null)
             {
-                selectButtonText.text = "SELECT";
-                selectButtonText.color = Color.white;
+                selectButtonText.text = "THAT ONE!";
+                selectButtonText.color = Color.white; // Clean white text
                 selectButtonText.fontStyle = FontStyles.Bold;
                 selectButtonText.fontSize = 36; // Match other button text size
+                selectButtonText.outlineColor = Color.black; // Black outline for contrast
+                selectButtonText.outlineWidth = 0.5f; // Thicker outline for better visibility
             }
         }
     }
@@ -218,16 +256,21 @@ public class GameUI : MonoBehaviour
             scaler.matchWidthOrHeight = 0.5f; // Balance between width and height
         }
         
-        // Style text elements - Even larger for AR
+        // Style text elements - Even larger for AR with galaxy theme
         if (levelText != null)
         {
             levelText.fontSize = 60; // Even larger AR level text
             levelText.alignment = TextAlignmentOptions.Center;
+            levelText.color = new Color(1f, 0.8f, 0.2f, 1f); // Bright orange for visibility
+            levelText.fontStyle = FontStyles.Bold;
+            levelText.outlineColor = new Color(0.1f, 0.1f, 0.3f, 1f); // Dark blue outline for contrast
+            levelText.outlineWidth = 0.4f;
+            levelText.lineSpacing = 1.2f; // More line spacing
             // Position level text at top (mobile-friendly)
             RectTransform levelRect = levelText.GetComponent<RectTransform>();
             levelRect.anchorMin = new Vector2(0.5f, 1f);
             levelRect.anchorMax = new Vector2(0.5f, 1f);
-            levelRect.sizeDelta = new Vector2(500, 120); // Larger container for AR
+            levelRect.sizeDelta = new Vector2(800, 120); // Much wider container for AR
             levelRect.anchoredPosition = new Vector2(0, -200); // Move down to avoid camera notch
         }
         
@@ -235,12 +278,17 @@ public class GameUI : MonoBehaviour
         {
             instructionText.fontSize = 48; // Even larger AR instruction text
             instructionText.alignment = TextAlignmentOptions.Center;
+            instructionText.color = new Color(0.9f, 0.9f, 1f, 1f); // Light blue for galaxy theme
+            instructionText.fontStyle = FontStyles.Bold;
+            instructionText.outlineColor = new Color(0.1f, 0.1f, 0.2f, 1f); // Dark outline for contrast
+            instructionText.outlineWidth = 0.3f;
+            instructionText.lineSpacing = 1.3f; // More line spacing for better readability
             // Position instruction text below level (mobile-friendly)
             RectTransform instructionRect = instructionText.GetComponent<RectTransform>();
             instructionRect.anchorMin = new Vector2(0.5f, 1f);
             instructionRect.anchorMax = new Vector2(0.5f, 1f);
-            instructionRect.sizeDelta = new Vector2(600, 100); // Larger container for AR
-            instructionRect.anchoredPosition = new Vector2(0, -300); // Move down to avoid camera notch
+            instructionRect.sizeDelta = new Vector2(900, 120); // Much wider container for AR
+            instructionRect.anchoredPosition = new Vector2(0, -350); // More spacing between level and instruction
         }
         
         if (selectButtonText != null)
@@ -381,7 +429,7 @@ public class GameUI : MonoBehaviour
     {
         if (levelText != null)
         {
-            levelText.text = $"Level: {GameManager.Instance.currentLevel}";
+            levelText.text = $"Journey : {GameManager.Instance.currentLevel}";
         }
         
         if (instructionText != null)
@@ -390,19 +438,19 @@ public class GameUI : MonoBehaviour
             {
                 if (simonGame.IsIdle())
                 {
-                    instructionText.text = "Get ready...";
+                    instructionText.text = "Spiky is preparing for the next cosmic challenge...";
                 }
                 else if (simonGame.IsPlayingSequence())
                 {
-                    instructionText.text = "Watch the sequence...";
+                    instructionText.text = "Watch Spiky's adventure through the cosmic orbs...";
                 }
                 else if (simonGame.IsWaitingForInput())
                 {
-                    instructionText.text = "Repeat the sequence!";
+                    instructionText.text = "Now it's your turn! Follow Spiky's cosmic Journey!";
                 }
                 else
                 {
-                    instructionText.text = "Get ready...";
+                    instructionText.text = "The cosmic adventure awaits...";
                 }
             }
         }
@@ -412,15 +460,18 @@ public class GameUI : MonoBehaviour
     {
         if (success)
         {
-            instructionText.text = "Correct! Next level...";
+            instructionText.text = "Excellent! Spiky's cosmic dance continues...";
             // Disable selection immediately when player completes sequence correctly
             selectionManager?.DisableSelection();
             // Keep the message visible for a while
-            StartCoroutine(ClearSuccessMessageAfterDelay(2f));
+            if (gameObject.activeInHierarchy)
+            {
+                StartCoroutine(ClearSuccessMessageAfterDelay(2f));
+            }
         }
         else
         {
-            instructionText.text = "Wrong! Game Over!";
+            instructionText.text = "The cosmic rhythm was lost... Game Over!";
             // Disable selection on game over
             selectionManager?.DisableSelection();
         }
@@ -433,7 +484,7 @@ public class GameUI : MonoBehaviour
     
     void OnLevelComplete(int level)
     {
-        instructionText.text = $"Level {level} Complete!";
+        instructionText.text = $"Journey {level} Complete! Spiky mastered this cosmic challenge!";
     }
     
     void OnGameOver()
@@ -517,6 +568,35 @@ public class GameUI : MonoBehaviour
         }
         else
         {
+        }
+    }
+    
+    void OnCorrectColorSelected(Color color)
+    {
+        // Show encouragement popup for correct color selection
+        if (encouragementPopup != null)
+        {
+            encouragementPopup.ShowEncouragement();
+        }
+    }
+    
+    System.Collections.IEnumerator PulseSelectText()
+    {
+        if (selectButtonText == null) yield break;
+        
+        float baseScale = 1f;
+        float pulseScale = 1.1f; // 10% larger
+        float pulseSpeed = 2f; // 2 pulses per second
+        float pulseIntensity = 0.5f; // Moderate pulsing
+        
+        while (selectButtonText != null)
+        {
+            float pulse = Mathf.Sin(Time.time * pulseSpeed) * pulseIntensity + 1f;
+            float currentScale = Mathf.Lerp(baseScale, pulseScale, (pulse - 1f) * 0.5f);
+            
+            selectButtonText.transform.localScale = Vector3.one * currentScale;
+            
+            yield return null;
         }
     }
 }

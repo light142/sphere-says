@@ -90,15 +90,15 @@ public class GameManager : MonoBehaviour
             // Style main menu with attractive background
             StyleMainMenu();
             
-            // Position main menu buttons - Much larger for mobile
+            // Position main menu buttons - Much larger for mobile with galaxy theme
             Button[] mainMenuButtons = mainMenuUI.GetComponentsInChildren<Button>();
             for (int i = 0; i < mainMenuButtons.Length; i++)
             {
                 RectTransform rect = mainMenuButtons[i].GetComponent<RectTransform>();
                 rect.anchorMin = new Vector2(0.5f, 0.5f);
                 rect.anchorMax = new Vector2(0.5f, 0.5f);
-                rect.sizeDelta = new Vector2(300, 80); // Much larger buttons for mobile
-                rect.anchoredPosition = new Vector2(0, 120 - (i * 100)); // More spacing between buttons
+                rect.sizeDelta = new Vector2(600, 150); // Much larger buttons for mobile
+                rect.anchoredPosition = new Vector2(0, 200 - (i * 200)); // More spacing between buttons
             }
         }
         
@@ -140,8 +140,8 @@ public class GameManager : MonoBehaviour
                 RectTransform instructionRect = texts[1].GetComponent<RectTransform>();
                 instructionRect.anchorMin = new Vector2(0.5f, 1f);
                 instructionRect.anchorMax = new Vector2(0.5f, 1f);
-                instructionRect.sizeDelta = new Vector2(600, 100); // Much larger for AR
-                instructionRect.anchoredPosition = new Vector2(0, -300); // Move down to avoid camera notch
+                instructionRect.sizeDelta = new Vector2(900, 120); // Much wider container for AR
+                instructionRect.anchoredPosition = new Vector2(0, -350); // Move down to avoid camera notch
                 
                 // Make instruction text much larger for AR
                 TextMeshProUGUI instructionText = texts[1].GetComponent<TextMeshProUGUI>();
@@ -202,29 +202,9 @@ public class GameManager : MonoBehaviour
             mainMenuImage = mainMenuUI.AddComponent<Image>();
         }
         
-        // Dark gradient background
-        mainMenuImage.color = new Color(0.1f, 0.1f, 0.2f, 1f); // Dark blue fully opaque
+        // Galaxy background
+        mainMenuImage.color = new Color(0.05f, 0.05f, 0.15f, 1f); // Deep space blue
         
-        // Add title text if it doesn't exist
-        TextMeshProUGUI[] texts = mainMenuUI.GetComponentsInChildren<TextMeshProUGUI>();
-        if (texts.Length == 0)
-        {
-            GameObject titleObj = new GameObject("TitleText");
-            titleObj.transform.SetParent(mainMenuUI.transform, false);
-            
-            RectTransform titleRect = titleObj.AddComponent<RectTransform>();
-            titleRect.anchorMin = new Vector2(0.5f, 1f);
-            titleRect.anchorMax = new Vector2(0.5f, 1f);
-            titleRect.sizeDelta = new Vector2(400, 80);
-            titleRect.anchoredPosition = new Vector2(0, -100);
-            
-            TextMeshProUGUI titleText = titleObj.AddComponent<TextMeshProUGUI>();
-            titleText.text = "SPHERE SAYS";
-            titleText.fontSize = 64; // Much larger title for mobile
-            titleText.alignment = TextAlignmentOptions.Center;
-            titleText.color = new Color(1f, 1f, 1f, 1f);
-            titleText.fontStyle = FontStyles.Bold;
-        }
         
         // Style main menu buttons
         Button[] buttons = mainMenuUI.GetComponentsInChildren<Button>();
@@ -258,12 +238,12 @@ public class GameManager : MonoBehaviour
     {
         if (button == null) return;
         
-        // Simple button colors - back to original
+        // Galaxy-themed button colors
         Color[] buttonColors = {
-            new Color(0.2f, 0.6f, 1f, 1f),    // Blue
-            new Color(0.2f, 0.8f, 0.2f, 1f),  // Green  
-            new Color(1f, 0.4f, 0.2f, 1f),    // Orange
-            new Color(0.8f, 0.2f, 0.8f, 1f)   // Purple
+            new Color(0.3f, 0.4f, 0.9f, 1f),    // Cosmic blue
+            new Color(0.8f, 0.2f, 0.8f, 1f),    // Cosmic purple
+            new Color(1f, 0.6f, 0.2f, 1f),      // Cosmic orange
+            new Color(0.2f, 0.8f, 0.8f, 1f)     // Cosmic cyan
         };
         
         Color buttonColor = buttonColors[index % buttonColors.Length];
@@ -278,14 +258,16 @@ public class GameManager : MonoBehaviour
             AddRoundedCorners(buttonImage);
         }
         
-        // Style button text - Larger for mobile
+        // Style button text - Galaxy theme for mobile
         TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
         if (buttonText != null)
         {
-            buttonText.color = Color.white;
+            buttonText.color = new Color(1f, 1f, 1f, 1f); // Bright white text
             buttonText.fontStyle = FontStyles.Bold;
-            buttonText.fontSize = 28; // Much larger text for mobile
+            buttonText.fontSize = 40; // Much larger text for mobile
             buttonText.alignment = TextAlignmentOptions.Center;
+            buttonText.outlineColor = new Color(0.1f, 0.1f, 0.2f, 1f); // Dark outline for contrast
+            buttonText.outlineWidth = 0.3f;
         }
     }
     
@@ -301,6 +283,12 @@ public class GameManager : MonoBehaviour
     
     public void ShowMainMenu()
     {
+        // Hide encouragement popup immediately
+        if (EncouragementPopup.Instance != null)
+        {
+            EncouragementPopup.Instance.Cleanup();
+        }
+        
         currentGameMode = GameMode.None;
         if (mainMenuUI != null) 
         {
@@ -326,9 +314,9 @@ public class GameManager : MonoBehaviour
         currentBanner = new GameObject("StartupBanner");
         SimpleBanner banner = currentBanner.AddComponent<SimpleBanner>();
         banner.ShowBanner(
-            "Welcome to Sphere Says!",
-            "Get ready to play an exciting memory game!\n\nWatch the sequence and repeat it back.",
-            "START GAME",
+            "Welcome to Spiky Says AR Game!",
+            "Placeholder for research participant information",
+            "OK",
             () => { /* Banner confirmed, game ready */ }
         );
     }
@@ -492,9 +480,9 @@ public class GameManager : MonoBehaviour
             currentBanner = new GameObject("ARGameBanner");
             SimpleBanner banner = currentBanner.AddComponent<SimpleBanner>();
             banner.ShowBanner(
-                "AR Mode Activated!",
-                "You're about to enter Augmented Reality mode!\n\nLook around and find the colored spheres in your environment.",
-                "ENTER AR",
+                "~ SPIKY'S COSMIC ADVENTURE ~",
+                "Welcome to the Augmented Reality Dimension!\n\n\n ~SPIKY~ The Monster Traveller\n~~~\nYour spiky orange monster companion will orbit around you, moving between glowing cosmic orbs in your space.\n\n\n YOUR MISSION\n~~~\nWatch Spiky visit each orb in sequence. When it's your turn, look at the correct orb and interact with it!\n\n\n AR MAGIC\n~~~\nThe cosmic orbs exist in your real world - look around and interact with them! Each orb pulses with mystical energy and plays unique sounds.\n\n\n MEMORY CHALLENGE\n~~~\nRemember the sequence as Spiky visits each orb. When Spiky disappears, repeat the pattern by selecting the correct orbs in order!\n\n\n Ready to help Spiky master the cosmic AR dimension?",
+                "JOIN SPIKY'S ADVENTURE",
                 () => {
                     simonGame.StartNewGame();
                 }
@@ -513,9 +501,9 @@ public class GameManager : MonoBehaviour
             currentBanner = new GameObject("2DGameBanner");
             SimpleBanner banner = currentBanner.AddComponent<SimpleBanner>();
             banner.ShowBanner(
-                "2D Mode Selected!",
-                "You're about to play in 2D mode!\n\nUse the colored buttons to repeat the sequence.",
-                "START 2D",
+                "CLASSIC GAME",
+                "Welcome to the classic memory challenge!\n\n\nFOUR COLOR BUTTONS\n~~~\nWatch the sequence of colored buttons light up and play their unique sounds.\n\n\nMEMORY CHALLENGE\n~~~\nRemember the exact order and repeat the sequence by tapping the buttons in the same order!\n\n\nLEVEL UP!\n~~~\nEach level adds one more button to the sequence. How far can you go?\n\n\nBUTTON COLORS\n~~~\nGREEN • YELLOW\nRED • BLUE\n\n\nReady to test your memory skills?",
+                "Let's Play!",
                 () => {
                     simonGame.StartNewGame();
                 }
@@ -525,6 +513,12 @@ public class GameManager : MonoBehaviour
     
     public void GameOver()
     {
+        // Hide encouragement popup immediately
+        if (EncouragementPopup.Instance != null)
+        {
+            EncouragementPopup.Instance.Cleanup();
+        }
+        
         // Track game_over event with sequence and player input data
         if (simonGame != null)
         {
@@ -566,6 +560,12 @@ public class GameManager : MonoBehaviour
     
     public void RestartGame()
     {
+        // Hide encouragement popup immediately
+        if (EncouragementPopup.Instance != null)
+        {
+            EncouragementPopup.Instance.Cleanup();
+        }
+        
         // Track restart_game event
         TelemetryManager.Instance?.TrackRestartGame();
         
@@ -609,6 +609,12 @@ public class GameManager : MonoBehaviour
     
     public void BackToMenu()
     {
+        // Hide encouragement popup immediately
+        if (EncouragementPopup.Instance != null)
+        {
+            EncouragementPopup.Instance.Cleanup();
+        }
+        
         // Track back_to_menu event
         TelemetryManager.Instance?.TrackBackToMenu();
         

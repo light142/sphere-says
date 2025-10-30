@@ -841,6 +841,7 @@ MonoBehaviour:
   gameOverPanel: {fileID: 265328767}
   finalScoreText: {fileID: 1638138853}
   playAgainButton: {fileID: 254215977}
+  encouragementPopup: {fileID: 0}
 --- !u!1 &355559865
 GameObject:
   m_ObjectHideFlags: 0
@@ -6353,6 +6354,7 @@ MonoBehaviour:
   blueButton: {fileID: 731992813}
   greenButton: {fileID: 252750382}
   yellowButton: {fileID: 866859718}
+  encouragementPopup: {fileID: 0}
 --- !u!1 &2099281972
 GameObject:
   m_ObjectHideFlags: 0

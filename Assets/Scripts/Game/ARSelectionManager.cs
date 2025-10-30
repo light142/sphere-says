@@ -31,7 +31,14 @@ public class ARSelectionManager : MonoBehaviour
         
         if (selectButtonText != null)
         {
-            selectButtonText.text = "SELECT";
+            selectButtonText.text = "THAT ONE!";
+            selectButtonText.color = Color.white; // Clean white text
+            selectButtonText.fontStyle = FontStyles.Bold;
+            selectButtonText.outlineColor = Color.black; // Black outline for contrast
+            selectButtonText.outlineWidth = 0.5f; // Thicker outline for better visibility
+            
+            // Start pulsing animation
+            StartCoroutine(PulseSelectText());
         }
     }
     
@@ -168,9 +175,9 @@ public class ARSelectionManager : MonoBehaviour
         // Reset text to default appearance
         if (selectButtonText != null)
         {
-            selectButtonText.color = Color.black; // Default black text
-            selectButtonText.outlineColor = Color.white;
-            selectButtonText.outlineWidth = 0.1f;
+            selectButtonText.color = Color.white; // Clean white text
+            selectButtonText.outlineColor = Color.black; // Black outline for contrast
+            selectButtonText.outlineWidth = 0.5f; // Thicker outline for better visibility
         }
     }
     
@@ -188,13 +195,91 @@ public class ARSelectionManager : MonoBehaviour
             
         }
         
-        // Also update button text color for better contrast
+        // Also update button text color for clean white with black outline
         if (selectButtonText != null)
         {
-            // Use white text for better contrast against colored background
-            selectButtonText.color = Color.white;
-            selectButtonText.outlineColor = Color.black;
-            selectButtonText.outlineWidth = 0.2f;
+            selectButtonText.color = Color.white; // Clean white text
+            selectButtonText.outlineColor = Color.black; // Black outline for contrast
+            selectButtonText.outlineWidth = 0.5f; // Thicker outline for better visibility
+        }
+    }
+    
+    Color GetContrastingTextColor(Color sphereColor)
+    {
+        // Create darker, contrasting text colors based on sphere color
+        if (IsColorSimilar(sphereColor, Color.red))
+        {
+            return new Color(0.8f, 0.8f, 0.1f, 1f); // Dark yellow for red spheres
+        }
+        else if (IsColorSimilar(sphereColor, Color.blue))
+        {
+            return new Color(0.8f, 0.5f, 0.1f, 1f); // Dark orange for blue spheres
+        }
+        else if (IsColorSimilar(sphereColor, Color.green))
+        {
+            return new Color(0.8f, 0.1f, 0.5f, 1f); // Dark pink for green spheres
+        }
+        else if (IsColorSimilar(sphereColor, Color.yellow))
+        {
+            return new Color(0.5f, 0.1f, 0.5f, 1f); // Dark purple for yellow spheres
+        }
+        else
+        {
+            return new Color(0.8f, 0.7f, 0.1f, 1f); // Default dark yellow
+        }
+    }
+    
+    Color GetContrastingOutlineColor(Color sphereColor)
+    {
+        // Create darker contrasting outline colors based on sphere color
+        if (IsColorSimilar(sphereColor, Color.red))
+        {
+            return new Color(0.1f, 0.5f, 0.1f, 1f); // Dark green outline for red spheres
+        }
+        else if (IsColorSimilar(sphereColor, Color.blue))
+        {
+            return new Color(0.5f, 0.1f, 0.1f, 1f); // Dark red outline for blue spheres
+        }
+        else if (IsColorSimilar(sphereColor, Color.green))
+        {
+            return new Color(0.1f, 0.1f, 0.5f, 1f); // Dark blue outline for green spheres
+        }
+        else if (IsColorSimilar(sphereColor, Color.yellow))
+        {
+            return new Color(0.1f, 0.5f, 0.5f, 1f); // Dark cyan outline for yellow spheres
+        }
+        else
+        {
+            return new Color(0.5f, 0.1f, 0.1f, 1f); // Default dark red outline
+        }
+    }
+    
+    bool IsColorSimilar(Color color1, Color color2)
+    {
+        // Check if two colors are similar (within a threshold)
+        float threshold = 0.3f;
+        return Mathf.Abs(color1.r - color2.r) < threshold &&
+               Mathf.Abs(color1.g - color2.g) < threshold &&
+               Mathf.Abs(color1.b - color2.b) < threshold;
+    }
+    
+    System.Collections.IEnumerator PulseSelectText()
+    {
+        if (selectButtonText == null) yield break;
+        
+        float baseScale = 1f;
+        float pulseScale = 1.1f; // 10% larger
+        float pulseSpeed = 2f; // 2 pulses per second
+        float pulseIntensity = 0.5f; // Moderate pulsing
+        
+        while (selectButtonText != null)
+        {
+            float pulse = Mathf.Sin(Time.time * pulseSpeed) * pulseIntensity + 1f;
+            float currentScale = Mathf.Lerp(baseScale, pulseScale, (pulse - 1f) * 0.5f);
+            
+            selectButtonText.transform.localScale = Vector3.one * currentScale;
+            
+            yield return null;
         }
     }
     

@@ -16,6 +16,9 @@ public class Game2DUI : MonoBehaviour
     public Button greenButton;
     public Button yellowButton;
     
+    [Header("Encouragement System")]
+    public EncouragementPopup encouragementPopup;
+    
     private SimonSaysGame simonGame;
     
     void Start()
@@ -38,6 +41,7 @@ public class Game2DUI : MonoBehaviour
         
         Setup2DUI();
         SetupColorButtons();
+        SetupEncouragementSystem();
         simonGame = FindFirstObjectByType<SimonSaysGame>();
         if (simonGame != null)
         {
@@ -53,6 +57,8 @@ public class Game2DUI : MonoBehaviour
             simonGame.OnLevelComplete += OnLevelComplete;
             simonGame.OnColorHighlight += OnColorHighlight;
             simonGame.OnGetReady += OnGetReady;
+            // Note: OnCorrectColorSelected is not subscribed for 2D mode
+            // Encouragement is only shown on level completion
         }
         
         if (restartButton != null)
@@ -96,6 +102,22 @@ public class Game2DUI : MonoBehaviour
         }
     }
     
+    void SetupEncouragementSystem()
+    {
+        // Get or create the singleton encouragement popup
+        if (EncouragementPopup.Instance == null)
+        {
+            GameObject encouragementObj = new GameObject("EncouragementPopup");
+            encouragementPopup = encouragementObj.AddComponent<EncouragementPopup>();
+            Debug.Log("Created new EncouragementPopup instance");
+        }
+        else
+        {
+            encouragementPopup = EncouragementPopup.Instance;
+            Debug.Log("Using existing EncouragementPopup instance");
+        }
+    }
+    
     void Setup2DUI()
     {
         // Setup 2D Game Canvas for responsive design
@@ -135,6 +157,11 @@ public class Game2DUI : MonoBehaviour
             {
                 levelText.fontSize = 48;
                 levelText.alignment = TextAlignmentOptions.Center;
+                levelText.color = new Color(1f, 0.8f, 0.2f, 1f); // Bright orange for visibility
+                levelText.fontStyle = FontStyles.Bold;
+                levelText.outlineColor = new Color(0.1f, 0.1f, 0.3f, 1f); // Dark blue outline for contrast
+                levelText.outlineWidth = 0.4f;
+                levelText.lineSpacing = 1.2f; // More line spacing
             }
         }
         
@@ -152,6 +179,11 @@ public class Game2DUI : MonoBehaviour
             {
                 instructionText.fontSize = 36;
                 instructionText.alignment = TextAlignmentOptions.Center;
+                instructionText.color = new Color(0.9f, 0.9f, 1f, 1f); // Light blue for galaxy theme
+                instructionText.fontStyle = FontStyles.Bold;
+                instructionText.outlineColor = new Color(0.1f, 0.1f, 0.2f, 1f); // Dark outline for contrast
+                instructionText.outlineWidth = 0.3f;
+                instructionText.lineSpacing = 1.3f; // More line spacing for better readability
             }
         }
         
@@ -313,6 +345,12 @@ public class Game2DUI : MonoBehaviour
     void OnLevelComplete(int level)
     {
         instructionText.text = $"Level {level} Complete!";
+        
+        // Show encouragement popup for level completion in 2D mode
+        if (encouragementPopup != null)
+        {
+            encouragementPopup.ShowEncouragement();
+        }
     }
     
     void OnGameOver()
@@ -379,6 +417,12 @@ public class Game2DUI : MonoBehaviour
     
     void OnDestroy()
     {
+        // Hide encouragement popup immediately
+        if (EncouragementPopup.Instance != null)
+        {
+            EncouragementPopup.Instance.Cleanup();
+        }
+        
         // Unsubscribe from events to prevent memory leaks and duplicate calls
         if (simonGame != null)
         {
@@ -394,4 +438,5 @@ public class Game2DUI : MonoBehaviour
     {
         UpdateUI();
     }
+    
 }

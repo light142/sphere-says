@@ -38,6 +38,7 @@ public class SimonSaysGame : MonoBehaviour
     public System.Action OnOrbiterReachedTarget; // New event when orbiter reaches target
     public System.Action OnOrbiterShrink; // New event for orbiter shrinking
     public System.Action OnOrbiterGrow; // New event for orbiter growing
+    public System.Action<Color> OnCorrectColorSelected; // New event for correct color selection
     
     public void StartNewGame()
     {
@@ -122,6 +123,12 @@ public class SimonSaysGame : MonoBehaviour
         {
             playerInput.Add(color);
             currentInputIndex++;
+            
+            // Trigger correct color selection event for encouragement (AR mode only)
+            if (GameManager.Instance != null && GameManager.Instance.currentGameMode == GameManager.GameMode.ModeAR)
+            {
+                OnCorrectColorSelected?.Invoke(color);
+            }
             
             if (currentInputIndex >= sequence.Count)
             {
