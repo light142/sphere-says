@@ -230,6 +230,8 @@ public class TelemetryManager : MonoBehaviour
             case QUIT_APPLICATION:
             case BACK_TO_MENU:
             case PLAY_AGAIN:
+            case SHOW_BANNER_2D:
+            case SHOW_BANNER_AR:
                 return CATEGORY_UI;
             
             default:

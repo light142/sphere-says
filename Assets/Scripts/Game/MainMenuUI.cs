@@ -7,6 +7,7 @@ public class MainMenuUI : MonoBehaviour
     public Button play2DButton;
     public Button playARButton;
     public Button quitButton;
+    public Button infoButton;
     
     [Header("UI Panels")]
     public GameObject mainMenuPanel;
@@ -38,6 +39,14 @@ public class MainMenuUI : MonoBehaviour
             
         if (quitButton != null)
             quitButton.onClick.AddListener(QuitGame);
+            
+        if (infoButton != null)
+            infoButton.onClick.AddListener(ShowResearchInfo);
+    }
+    
+    public void ShowResearchInfo()
+    {
+        GameManager.Instance?.ShowResearchInfoFromMenu();
     }
     
     public void Play2D()

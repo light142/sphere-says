@@ -92,13 +92,47 @@ public class GameManager : MonoBehaviour
             
             // Position main menu buttons - Much larger for mobile with galaxy theme
             Button[] mainMenuButtons = mainMenuUI.GetComponentsInChildren<Button>();
+            MainMenuUI mainMenuScript = mainMenuUI.GetComponent<MainMenuUI>();
+            if (mainMenuScript == null)
+            {
+                mainMenuScript = mainMenuUI.GetComponentInChildren<MainMenuUI>();
+            }
+            int buttonIndex = 0;
+            
             for (int i = 0; i < mainMenuButtons.Length; i++)
             {
-                RectTransform rect = mainMenuButtons[i].GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0.5f, 0.5f);
-                rect.anchorMax = new Vector2(0.5f, 0.5f);
-                rect.sizeDelta = new Vector2(600, 150); // Much larger buttons for mobile
-                rect.anchoredPosition = new Vector2(0, 200 - (i * 200)); // More spacing between buttons
+                Button btn = mainMenuButtons[i];
+                RectTransform rect = btn.GetComponent<RectTransform>();
+                
+                // Check if this is the info button - check by reference or name
+                bool isInfoButton = false;
+                if (mainMenuScript != null && mainMenuScript.infoButton != null)
+                {
+                    isInfoButton = (btn == mainMenuScript.infoButton);
+                }
+                // Fallback: check by name
+                if (!isInfoButton && (btn.name.ToLower().Contains("info") || btn.name.ToLower().Contains("information")))
+                {
+                    isInfoButton = true;
+                }
+                
+                if (isInfoButton)
+                {
+                    // Position info button in top-right corner
+                    rect.anchorMin = new Vector2(1f, 1f);
+                    rect.anchorMax = new Vector2(1f, 1f);
+                    rect.sizeDelta = new Vector2(100, 100); // Small circular button
+                    rect.anchoredPosition = new Vector2(-120, -120); // Top-right corner with padding
+                }
+                else
+                {
+                    // Regular menu buttons
+                    rect.anchorMin = new Vector2(0.5f, 0.5f);
+                    rect.anchorMax = new Vector2(0.5f, 0.5f);
+                    rect.sizeDelta = new Vector2(600, 150); // Much larger buttons for mobile
+                    rect.anchoredPosition = new Vector2(0, 200 - (buttonIndex * 200)); // More spacing between buttons
+                    buttonIndex++;
+                }
             }
         }
         
@@ -208,9 +242,36 @@ public class GameManager : MonoBehaviour
         
         // Style main menu buttons
         Button[] buttons = mainMenuUI.GetComponentsInChildren<Button>();
+        MainMenuUI mainMenuScript = mainMenuUI.GetComponent<MainMenuUI>();
+        if (mainMenuScript == null)
+        {
+            mainMenuScript = mainMenuUI.GetComponentInChildren<MainMenuUI>();
+        }
+        
+        int styleIndex = 0;
         for (int i = 0; i < buttons.Length; i++)
         {
-            StyleButton(buttons[i], i);
+            // Check if this is the info button - check by reference or name
+            bool isInfoButton = false;
+            if (mainMenuScript != null && mainMenuScript.infoButton != null)
+            {
+                isInfoButton = (buttons[i] == mainMenuScript.infoButton);
+            }
+            // Fallback: check by name
+            if (!isInfoButton && (buttons[i].name.ToLower().Contains("info") || buttons[i].name.ToLower().Contains("information")))
+            {
+                isInfoButton = true;
+            }
+            
+            if (isInfoButton)
+            {
+                StyleInfoButton(buttons[i]);
+            }
+            else
+            {
+                StyleButton(buttons[i], styleIndex);
+                styleIndex++;
+            }
         }
     }
     
@@ -281,6 +342,61 @@ public class GameManager : MonoBehaviour
         // with the right sprite asset, but for now we'll use a simple approach
     }
     
+    void StyleInfoButton(Button button)
+    {
+        if (button == null) return;
+        
+        // Make button small and circular-looking
+        Image buttonImage = button.GetComponent<Image>();
+        if (buttonImage != null)
+        {
+            // Style as circular button - light blue background
+            buttonImage.color = new Color(0.4f, 0.5f, 0.9f, 0.9f); // Light blue with transparency
+            buttonImage.type = Image.Type.Simple;
+        }
+        
+        // Find or create button text - show "i" icon
+        TextMeshProUGUI buttonText = null;
+        
+        // First, try to find existing text component
+        TextMeshProUGUI[] allTexts = button.GetComponentsInChildren<TextMeshProUGUI>(true);
+        foreach (TextMeshProUGUI text in allTexts)
+        {
+            if (text != null && text.name != "MaskImage")
+            {
+                buttonText = text;
+                break;
+            }
+        }
+        
+        // If no text component exists, create one
+        if (buttonText == null)
+        {
+            GameObject textObj = new GameObject("InfoText");
+            textObj.transform.SetParent(button.transform, false);
+            RectTransform textRect = textObj.AddComponent<RectTransform>();
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
+            
+            buttonText = textObj.AddComponent<TextMeshProUGUI>();
+        }
+        
+        // Style the text
+        if (buttonText != null)
+        {
+            buttonText.text = "i"; // Information icon
+            buttonText.color = new Color(1f, 1f, 1f, 1f); // White text
+            buttonText.fontStyle = FontStyles.Bold;
+            buttonText.fontSize = 48; // Large "i" for visibility
+            buttonText.alignment = TextAlignmentOptions.Center;
+            buttonText.outlineColor = new Color(0.1f, 0.1f, 0.2f, 1f); // Dark outline
+            buttonText.outlineWidth = 0.3f;
+            buttonText.enabled = true;
+        }
+    }
+    
     public void ShowMainMenu()
     {
         // Hide encouragement popup immediately
@@ -314,11 +430,33 @@ public class GameManager : MonoBehaviour
         currentBanner = new GameObject("StartupBanner");
         SimpleBanner banner = currentBanner.AddComponent<SimpleBanner>();
         banner.ShowBanner(
-            "Welcome to Spiky Says AR Game!",
-            "Placeholder for research participant information",
-            "OK",
-            () => { /* Banner confirmed, game ready */ }
+            "~ RESEARCH PARTICIPANT INFORMATION ~",
+            "\n\n\n STUDY PURPOSE\n~~~\nThis research explores how Augmented Reality (AR) affects short-term memory performance compared to traditional 2D games. Your participation helps us understand cognitive engagement in AR environments.\n\n\n YOUR PARTICIPATION\n~~~\nYour participation is entirely voluntary. You may withdraw at any time without giving a reason. You are not required to provide any personal identifying information.\n\n\n PRIVACY & CONFIDENTIALITY\n~~~\nAll data collected is anonymous and confidential. Only game performance metrics (accuracy and response times) are recorded. Your identity will not be linked to any results.\n\n\n RESEARCH TEAM\n~~~\nResearcher: Aung Aung (au00001@ess.ais.ac.nz)\nSupervisor: Dr. Saranya Selvarangan (saranyas@ais.ac.nz)\nAuckland Institute of Studies\n\n\nThank you for participating in this research study!",
+            "I AGREE TO PARTICIPATE",
+            () => { ShowResearchInstructionsBanner(); }
         );
+    }
+    
+    public void ShowResearchInstructionsBanner()
+    {
+        if (currentBanner != null)
+        {
+            Destroy(currentBanner);
+        }
+        currentBanner = new GameObject("ResearchInstructionsBanner");
+        SimpleBanner banner = currentBanner.AddComponent<SimpleBanner>();
+        banner.ShowBanner(
+            "~ RESEARCH INSTRUCTIONS ~",
+            "We appreciate your participation in this research study.\n\n\n\n GAME MODES\n~~~\nThere are two versions of the memory game available to play:\n\n• AR (Augmented Reality) Mode\n\n• 2D (Traditional Touchscreen) Mode\n\n\n\n INSTRUCTIONS\n~~~\nYou can play either game mode in any order you prefer.\n\nYou can play each mode as many times as you want.\n\nSwitch between modes anytime using the menu buttons.\nSelect your preferred game mode from the menu and start playing!\n\n\n\nReady to begin your memory challenge?",
+            "GOT IT",
+            () => { /* Banner confirmed, ready for game selection */ }
+        );
+    }
+    
+    public void ShowResearchInfoFromMenu()
+    {
+        // Show research participant information, then instructions
+        ShowStartupBanner();
     }
     
     public void Start2DGame()
